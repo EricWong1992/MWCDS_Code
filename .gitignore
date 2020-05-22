@@ -1,0 +1,5 @@
+*.exe
+*.bat
+*.txt
+cmake-build-debug/
+.idea/
