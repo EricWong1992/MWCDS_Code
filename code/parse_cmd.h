@@ -9,9 +9,9 @@
 
 using namespace std;
 
-// 总参数数量
+/// modify here: total parameters count
 static const int total_para_num = 7;
-// 暂时支持除了instance和seed之外的8个参数
+/// modify here: parameter type
 static const char* const parastr[] =
         {
                 "--i",          // instance
@@ -33,7 +33,7 @@ private:
 public:
     Parameters(const int argc, char** const argv)
     {
-        if (argc >= total_para_num * 2)
+        if (argc > total_para_num * 2 + 1)
         {
             cout << "Warning: Too many params input, please modify parse arguments model!!" << endl;
         }

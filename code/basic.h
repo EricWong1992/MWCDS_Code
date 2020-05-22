@@ -39,19 +39,19 @@ EdgeLib *edge; //存储边信息
 
 chrono::steady_clock::time_point start;
 
-llong max_steps;
+//llong max_steps;
 llong step = 1;
 llong stepaction;
 llong steppre;
 int try_step;
 uint seed;
 int cutoff_time;
-int mode;
+//int mode;
 int choosedremove_v, choosedadd_v;
 int v_num;
 int e_num;
 
-int iter;
+//int iter;
 
 //parameter
 int floor0 = 100;
@@ -62,7 +62,7 @@ int insTimes = 2;
 //Edge *edge;
 //int *edge_weight;
 
-long *weight;
+double *weight;
 double weight_para_aphle = 0.3; //权重调整系数
 int *subscore;                  //带权的分数，可以变支配的点的权重和减去变不支配的点的权重和
 int *toberemoved;
@@ -74,9 +74,9 @@ int *score;
 int *initscore; //初始化阶段的分数，即2Wv+Cv-1
 // int *sub_score;
 llong *time_stamp;
-double s_alpha;
-double s_beta;
-double s_gamma;
+//double s_alpha;
+//double s_beta;
+//double s_gamma;
 
 int *v_weight;
 int **v_edges;
@@ -99,7 +99,7 @@ int *greypointset;
 int *indexingreypoint;
 int *isgrey;
 int greypointnum;
-int cur_c_size; //当前解的大小
+//int cur_c_size;
 int c_size;
 int *v_in_c;
 int *candidate;
@@ -132,36 +132,36 @@ int *WV;  //周围的C中的白色点数
 int *dnf;
 int *low;
 int *isCut;
-int *recordisCut;
+//int *recordisCut;
 int *recordCutPointSet;
-int recordcutIndex;
+//int recordcutIndex;
 int *RemovedPoint; //删掉的点的集合
 int *AddedPoint;   //加入的点的集合
 int *cutPointSet;  //割点集合
 int *initIndex;    //初始化时的序号
 
 int cutIndex;     //割点集合大小
-int AddedIndex;   //加入点的数量
-int RemovedIndex; //删掉的点的数量
-int ave_weight;
+//int AddedIndex;   //加入点的数量
+//int RemovedIndex; //删掉的点的数量
+//int ave_weight;
 long para_gama = 3000; //控制权重之和
-double p_scale;
+//double p_scale;
 int connectedNum = 0; //连通分量的数量
 int minUndom;
 int undomafteradd;
 llong averagedegree = 0;
 
-double para1; // sub_param*subscore+age
-int para2;    // threshold = v_degree/count_param
-int para3;
-int para4;
-int CVpara = 1;
-int WVpara = 1;
-int Cmax; //无提升的最大周期
-double Temperature;
-long totalweight;
+//double para1; // sub_param*subscore+age
+//int para2;    // threshold = v_degree/count_param
+//int para3;
+//int para4;
+//int CVpara = 1;
+//int WVpara = 1;
+//int Cmax; //无提升的最大周期
+//double Temperature;
+double totalweight;
 long weightthreshold; //权重阈值
-llong check_size = 0;
+//llong check_size = 0;
 
 int *father;
 int *childnum;
