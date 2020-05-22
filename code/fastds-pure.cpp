@@ -1,17 +1,19 @@
 #include "fastds-pure.h"
+#include "parse_cmd.h"
 #include <sstream>
 
 int main(int argc, char *argv[])
 {
-    uint seed;
-    cutoff_time = atoi(argv[2]);
-    string instanceName = "";
-    instanceName += argv[1];
-    seed = atoi(argv[3]);
-    floor0 = atoi(argv[4]);
-    floor1 = atoi(argv[5]);
-    insTimes = atoi(argv[6]);
-    ceilingTimes = atoi(argv[7]);
+    Parameters* para = new Parameters(argc, argv);
+    string instanceName = para->getParameterValue("--i");
+    seed = atoi(para->getParameterValue("--s").c_str());
+    cutoff_time = atoi(para->getParameterValue("--t").c_str());
+    floor0 = atoi(para->getParameterValue("--f0").c_str());
+    floor1 = atoi(para->getParameterValue("--f1").c_str());
+    insTimes = atoi(para->getParameterValue("--it").c_str());
+    ceilingTimes = atoi(para->getParameterValue("--ct").c_str());
+    delete para;
+
     BuildInstance(instanceName);
     srand(seed);
     start = chrono::steady_clock::now();

@@ -1,15 +1,23 @@
-```
+# Introduction
+
+## 1. Build && Run
+
+```bash
 build : g++ -O3 -std=c++11 fastds-pure.cpp -o fastcds
 
-run: ./fastcds ./file.txt 30 1 100 100000 2 10
+run: ./fastcds --i ./file.txt --t 30 --s 1 --f0 100 --f1 100000 --it 2 --ct 10
 ```
-arg[1]: input file
 
-arg[2]: cutofftime
-
-arg[3]: rand seed
-
-arg[4]-arg[7]:HDC parameters. detailed information of the parameters can be found in main.cpp
+```txt
+"--i": input file
+"--s": rand seed
+"--t": cutofftime
+# arg[4]-arg[7]:HDC parameters. detailed information of the parameters
+"--f0:" floor0
+"--f1": floor1
+"--it": insTimes
+"--ct": ceilingTimes
+```
 
 bigcnt.cpp is used to make the graph connect
 usage:
@@ -18,10 +26,11 @@ g++ bigcnt.cpp -o bigcnt
 inputfile: the file path of graph to be modified
 outputfile: the file path of graph modified
 
-## This graph is represented in the DIMACS graph format in the following way:
+## 2. DIMACS graph format
 
 c this is the graph with vertices {1,2,3,4,5} and edges {(1,2),(2,3),(2,4),(3,4),(4,5)}
-```
+
+```txt
 p edge 5 5
 v 1 1
 v 2 1
