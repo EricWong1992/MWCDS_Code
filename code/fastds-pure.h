@@ -749,6 +749,13 @@ void MarkCut()
         child[fixedSet[i]] = low[fixedSet[i]] = dnf[fixedSet[i]] = 0;
 }
 
+//用于初始化fix割点
+void MarkCutWithNoCandidate()
+{
+    root = rand() % v_num;
+    cutPointNoRecur(root);
+}
+
 /*
 TODO:
 构造树应该有3个目标，

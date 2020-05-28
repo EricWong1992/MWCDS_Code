@@ -198,6 +198,7 @@ void lowerScore();
 bool test_score();
 void LocalSearch();
 void MarkCut();
+void MarkCutWithNoCandidate();
 void minusWeight(int, int);
 void removeUpdate(int);
 int ChooseRemoveVTopofBMS(int count, int choice);

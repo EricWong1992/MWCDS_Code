@@ -9,11 +9,6 @@ double TimeElapsed()
 
 int BuildInstance(string filename)
 {
-    string tmp;
-    string sign;
-    int v, e;
-    int v1, v2;
-
     ifstream infile;
     infile.open(filename);
     if (infile.fail())
@@ -144,12 +139,12 @@ int BuildInstance(string filename)
             edge[edgeCount].v = v;
             edge[edgeCount].next = first[edge[edgeCount].u];
             first[edge[edgeCount].u] = edgeCount;
-
+            
             edge[edgeCount + 1].u = edge[edgeCount].v;
             edge[edgeCount + 1].v = edge[edgeCount].u;
             edge[edgeCount + 1].next = first[edge[edgeCount + 1].u];
             first[edge[edgeCount + 1].u] = edgeCount + 1;
-
+            
             ++v_degree[u];
             ++v_degree[v];
             edgeCount += 2;
@@ -161,7 +156,7 @@ int BuildInstance(string filename)
 
     v_adj[0] = 0;
     v_edges[0] = 0;
-    for (v = 1; v < v_num + 1; v++)
+    for (int v = 1; v < v_num + 1; v++)
     {
         v_adj[v] = new long[v_degree[v]];
         v_edges[v] = new int[v_degree[v]];
@@ -170,10 +165,10 @@ int BuildInstance(string filename)
     int *v_degree_tmp = new int[v_num + 1];
     fill_n(v_degree_tmp, v_num + 1, 0);
 
-    for (e = 0; e < e_num; e++)
+    for (int e = 0; e < e_num; e++)
     {
-        v1 = edge[2 * e].u;
-        v2 = edge[2 * e].v;
+        int v1 = edge[2 * e].u;
+        int v2 = edge[2 * e].v;
 
         v_edges[v1][v_degree_tmp[v1]] = e;
         v_edges[v2][v_degree_tmp[v2]] = e;

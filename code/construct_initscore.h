@@ -253,29 +253,15 @@ void ConstructByInitScore()
     fill_n(score, v_num + 1, 0);
     lowerScore();
     UpdateBestSolution();
-    //TODO:可以修改为使用割点fix
-    for (int i = 1; i <= v_num; i++)
-    {
-        //只有一个邻居
-        if (v_degree[i] == 1)
+
+    //使用割点fix
+    MarkCutWithNoCandidate();
+    for (int i = 0; i < cutIndex; ++i) {
+        if (isCut[cutPointSet[i]] != 0)
         {
-            v_fixed[v_adj[i][0]] = 1; //固定某些点
-            fixedSet[fixedNum++] = v_adj[i][0];
-        }
-        if (v_degree[i] == 2)
-        {
-            long b = v_adj[i][0];
-            long c = v_adj[i][1];
-            if (v_degree[c] == 2 && (v_adj[c][0] == b || v_adj[c][1] == b))
-            {
-                v_fixed[b] = 1;
-                fixedSet[fixedNum++] = b;
-            }
-            if (v_degree[b] == 2 && (v_adj[b][0] == c || v_adj[b][1] == c))
-            {
-                v_fixed[c] = 1;
-                fixedSet[fixedNum++] = c;
-            }
+            int cutPoint = cutPointSet[i];
+            v_fixed[cutPoint] = 1;
+            fixedSet[fixedNum++] = cutPoint;
         }
     }
 
