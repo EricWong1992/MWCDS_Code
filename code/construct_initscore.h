@@ -255,7 +255,7 @@ void ConstructByInitScore()
     UpdateBestSolution();
 
     //使用割点fix
-    MarkCutWithNoCandidate();
+    MarkCut();
     for (int i = 0; i < cutIndex; ++i) {
         if (isCut[cutPointSet[i]] != 0)
         {

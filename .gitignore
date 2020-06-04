@@ -3,3 +3,5 @@
 *.txt
 cmake-build-debug/
 .idea/
+.vscode/
+code/Array.h

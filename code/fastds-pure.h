@@ -418,7 +418,7 @@ bool cmp(int a, int b)
 }
 
 /**
- if ther is no non-tabu operation then choose top 40%
+ if there is no non-tabu operation then choose top 40%
 
  @return choosen vertex
  */
@@ -737,9 +737,17 @@ void MarkCut()
 {
     ind = 0;
     for (int i = 0; i < cutIndex; i++)
-        isCut[cutPointSet[i]] = 0; //将之前割点给还原
+        isCut[cutPointSet[i]] = 0; //将之前割点给还
     cutIndex = 0;
+    //用于初始化fix割点
+    if (candidate_size == 0)
+    {
+        root = rand() % v_num;
+    }
+    else
+    {
     root = candidate[rand() % candidate_size];
+    }
     //cutPoint(root,root);
     cutPointNoRecur(root);
 
@@ -747,13 +755,6 @@ void MarkCut()
         child[candidate[i]] = low[candidate[i]] = dnf[candidate[i]] = 0;
     for (int i = 0; i < fixedNum; i++)
         child[fixedSet[i]] = low[fixedSet[i]] = dnf[fixedSet[i]] = 0;
-}
-
-//用于初始化fix割点
-void MarkCutWithNoCandidate()
-{
-    root = rand() % v_num;
-    cutPointNoRecur(root);
 }
 
 /*
