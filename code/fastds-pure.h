@@ -805,9 +805,11 @@ void LocalSearch1()
         {
             if (steppre != step)
                 UpdateBestSolution();
-            if (candidate_size == 1)
-                return; //不考虑将候选解大小删为空的情况libohan，防止出现模0错误
-            removeUpdate(UpdateTargetSize(1));
+            //不考虑将候选解大小删为空的情况libohan，防止出现模0错误
+            //wangkai:UpdateTargetSize传的参数为1，即从toberemoved中选点删除，所以这里应该判断是toberemoved的数量
+            if (toberemovedNum == 1) return;
+            int BMS_remove_v = UpdateTargetSize(1);
+            removeUpdate(BMS_remove_v);
             minUndom = undom_stack_fill_pointer;
             steppre = step;
             NOimprovementstep = 0;
