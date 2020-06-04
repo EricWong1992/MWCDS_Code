@@ -3,7 +3,7 @@
 ## 1. Build && Run
 
 ```bash
-build : g++ -O3 -std=c++11 fastds-pure.cpp -o fastcds
+build : g++ -O3 -std=c++11 fastds-pure.cpp -o fastwcds
 
 run: ./fastcds --i ./file.txt --t 30 --s 1 --f0 100 --f1 100000 --it 2 --ct 10
 ```
