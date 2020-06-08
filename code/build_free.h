@@ -35,6 +35,7 @@ int BuildInstance(string filename)
             infile >> v_num >> e_num;
             /*****************new******************/
             weight = new double[v_num + 1];
+            weight_backup = new double[v_num + 1];
             weightthreshold = (v_num + 1) * para_gama;
             v_threshold = new int[v_num + 1];
             score = new int[v_num + 1];
@@ -129,6 +130,7 @@ int BuildInstance(string filename)
             double vertex_weight;
             infile >> v >> vertex_weight;
             weight[v] = vertex_weight;
+            weight_backup[v] = vertex_weight;
             totalweight += vertex_weight;
         }
         if (strcmp(tempStr, "e") == 0)

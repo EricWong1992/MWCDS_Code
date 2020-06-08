@@ -63,10 +63,10 @@ int insTimes = 2;
 //int *edge_weight;
 
 double *weight;
+double *weight_backup;
 double weight_para_aphle = 0.3; //权重调整系数
 int *subscore;                  //带权的分数，可以变支配的点的权重和减去变不支配的点的权重和
 int *toberemoved;
-int toberemovednum;
 int *outofcut;
 int outofcutnum;
 

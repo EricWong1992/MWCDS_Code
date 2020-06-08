@@ -254,6 +254,11 @@ void ConstructByInitScore()
     lowerScore();
     UpdateBestSolution();
 
+    //初始化所有candidate用于寻找割点
+    for (int i = 1; i <= v_num; ++i) {
+        candidate[candidate_size++] = i;
+    }
+
     //使用割点fix
     MarkCut();
     for (int i = 0; i < cutIndex; ++i) {
@@ -264,6 +269,8 @@ void ConstructByInitScore()
             fixedSet[fixedNum++] = cutPoint;
         }
     }
+    //还原candidate
+    candidate_size = 0;
 
     ResetCandidate();
     //for(int i=1;i<=v_num;i++)

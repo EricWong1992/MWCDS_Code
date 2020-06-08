@@ -738,16 +738,16 @@ void MarkCut()
     ind = 0;
     for (int i = 0; i < cutIndex; i++)
         isCut[cutPointSet[i]] = 0; //将之前割点给还
+    //toberemoved恢复初始状态
+    toberemovedNum = 0;
+    for (int i = 0; i < v_num; ++i) {
+        indextoberemoved[i] = toberemovedNum;
+        toberemoved[toberemovedNum++] = i;
+        inToberemoved[i] = 1;
+    }
     cutIndex = 0;
-    //用于初始化fix割点
-    if (candidate_size == 0)
-    {
-        root = rand() % v_num;
-    }
-    else
-    {
     root = candidate[rand() % candidate_size];
-    }
+
     //cutPoint(root,root);
     cutPointNoRecur(root);
 
@@ -775,6 +775,8 @@ void MarkCuttree()
     for (int i = 0; i < toberemovedNum; i++)
         inToberemoved[toberemoved[i]] = 0;
     toberemovedNum = 0;
+//    root = candidate[rand() % candidate_size];
+    //TODO:生成树的根节点选择会对结果造成影响
     root = candidate[0];
     cutPoint1(root);
     for (int i = 0; i < candidate_size; i++)
@@ -807,7 +809,7 @@ void LocalSearch1()
                 UpdateBestSolution();
             //不考虑将候选解大小删为空的情况libohan，防止出现模0错误
             //wangkai:UpdateTargetSize传的参数为1，即从toberemoved中选点删除，所以这里应该判断是toberemoved的数量
-            if (toberemovedNum == 1) return;
+            if (toberemovedNum == 0) return;
             int BMS_remove_v = UpdateTargetSize(1);
             removeUpdate(BMS_remove_v);
             minUndom = undom_stack_fill_pointer;

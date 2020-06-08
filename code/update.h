@@ -51,6 +51,7 @@ int UpdateTargetSize(int choice)
     return best_remove_v;
 } //在当前所有点全都被支配的情况下选择一个分数最高的点删除
 
+//根据v_in_c更新candidate
 void ResetCandidate()
 {
     int v;
@@ -149,13 +150,6 @@ void cutPointNoRecur(int root)
         SF[candidate[u]] = first[candidate[u]];
     for (u = 0; u < fixedNum; u++)
         SF[fixedSet[u]] = first[fixedSet[u]];
-    //用于初始解寻找割点
-    if (candidate_size == 0 && fixedNum == 0)
-    {
-        for (int i = 1; i < v_num + 1; ++i) {
-            SF[i] = first[i];
-        }
-    }
     Stack[top] = root;
     dnf[root] = low[root] = ++inde;
     while (top >= 0)
