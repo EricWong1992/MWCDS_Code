@@ -163,6 +163,9 @@ double totalweight;
 long weightthreshold; //权重阈值
 //llong check_size = 0;
 
+//mwcds相关，与totalweight作打分不同
+double t_weight;    //总权重
+
 int *father;
 int *childnum;
 int *inToberemoved;

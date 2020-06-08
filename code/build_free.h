@@ -153,6 +153,7 @@ int BuildInstance(string filename)
         }
         infile >> tempStr;
     }
+    t_weight = totalweight;
 
     infile.close();
 

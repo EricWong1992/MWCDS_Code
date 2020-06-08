@@ -96,6 +96,17 @@ void UpdateBestSolution()
         //            best_v_in_c[v] = v_in_c[v];
         //        }
         //memcpy(best_v_in_c,v_in_c,sizeof(int)*(v_num+1));
+        double tempWeight = 0;
+        for (int i = 1; i < v_num + 1; ++i) {
+            if (v_in_c[i] == 1)
+            {
+                tempWeight += weight_backup[i];
+            }
+        }
+//        cout << "weight:" << t_weight << endl;
+        //TODO:当前程序找到的解是mcds，不是mwcds，权值不一定最小
+        t_weight = tempWeight;
+
         best_c_size = c_size;
         best_comp_time = TimeElapsed();
         best_step = step;
