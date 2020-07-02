@@ -234,6 +234,7 @@ void FreeMemory()
     delete[] isgrey;
     delete[] edge;
     delete[] weight;
+    delete[] weight_backup;
     delete[] subscore;
     delete[] toberemoved;
     delete[] outofcut;

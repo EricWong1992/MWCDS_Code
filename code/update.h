@@ -252,16 +252,16 @@ bool judgeCut(int node)
 //使用参数对权重进行更新
 void updateWeight()
 {
-    for (int i = 1; i <= v_num; i++)
-    {
-        int newweight = weight_para_aphle * weight[i];
-        if (newweight < 1)
-            newweight = 1;
-        int tobeminus = (weight[i] - newweight);
-        if (tobeminus > 0)
-            minusWeight(i, tobeminus);
-        totalweight -= tobeminus;
-    }
+    // for (int i = 1; i <= v_num; i++)
+    // {
+    //     int newweight = weight_para_aphle * weight[i];
+    //     if (newweight < 1)
+    //         newweight = 1;
+    //     int tobeminus = (weight[i] - newweight);
+    //     if (tobeminus > 0)
+    //         minusWeight(i, tobeminus);
+    //     totalweight -= tobeminus;
+    // }
 }
 
 void updateSubscore()

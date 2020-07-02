@@ -383,33 +383,34 @@ bool Remove(int v)
 //增加权重，只对白点及其周围点
 void addWeight(int node)
 {
-    weight[node]++;
-    for (int i = 0; i < v_degree[node]; i++)
-        subscore[v_adj[node][i]]++;
-    subscore[node]++;
+//    weight[node]++;
+//    for (int i = 0; i < v_degree[node]; i++)
+//        subscore[v_adj[node][i]]++;
+//    subscore[node]++;
 } //增加权重的总是白色点，周围及其自身的分数都要增加
 
 void minusWeight(int node, int tobeminus)
 {
-    weight[node] -= tobeminus;
-    if (dominated[node] == 0)
-    {
-        for (int i = 0; i < v_degree[node]; i++)
-            subscore[v_adj[node][i]] -= tobeminus;
-        subscore[node] -= tobeminus;
-    } //白点
-    else if (v_in_c[node] == 0)
-    {
-        if (dominated[node] == 1)
-        {
-            long u = onlydominate[node];
-            subscore[u] += tobeminus;
-            //            for(int i=0;i<v_degree[node];i++){
-            //                if(v_in_c[v_adj[node][i]]==1)
-            //                    subscore[v_adj[node][i]]++;
-            //            }
-        }
-    } //不是白点且不是黑点，则为灰点，减权重之后要将仅仅支配的点分数+1
+//    weight[node] -= tobeminus;
+//    if (dominated[node] == 0)
+//    {
+//        for (int i = 0; i < v_degree[node]; i++)
+//            subscore[v_adj[node][i]] -= tobeminus;
+//        subscore[node] -= tobeminus;
+//    } //白点
+//    else if (v_in_c[node] == 0)
+//    {
+//        if (dominated[node] == 1)
+//        {
+//            long u = onlydominate[node];
+//            subscore[u] += tobeminus;
+//            //            for(int i=0;i<v_degree[node];i++){
+//            //                if(v_in_c[v_adj[node][i]]==1)
+//            //                    subscore[v_adj[node][i]]++;
+//            //            }
+//        }
+//    }
+    //不是白点且不是黑点，则为灰点，减权重之后要将仅仅支配的点分数+1
 }
 
 bool cmp(int a, int b)
