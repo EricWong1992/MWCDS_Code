@@ -65,7 +65,7 @@ int insTimes = 2;
 double *weight;
 double *weight_backup;
 double weight_para_aphle = 0.3; //权重调整系数
-int *subscore;                  //带权的分数，可以变支配的点的权重和减去变不支配的点的权重和
+double *subscore;                  //带权的分数，可以变支配的点的权重和减去变不支配的点的权重和
 int *toberemoved;
 int *outofcut;
 int outofcutnum;
@@ -94,7 +94,7 @@ int *SF;            //指向顶点的第一条未搜索边，大小为v_num+1
 int *child;         //存储顶点的儿子数量，大小为v_num+1
 long *onlydominate; //onlydominate[a]=b表示a只被b支配
 
-int *dominated; //论文中的dd:dominated degree
+int *dominated;  //论文中的dd:dominated degree
 int *greypointset;
 int *indexingreypoint;
 int *isgrey;
@@ -160,7 +160,7 @@ llong averagedegree = 0;
 //int Cmax; //无提升的最大周期
 //double Temperature;
 double totalweight;
-long weightthreshold; //权重阈值
+double weightthreshold; //权重阈值
 //llong check_size = 0;
 
 //mwcds相关，与totalweight作打分不同

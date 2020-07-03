@@ -87,19 +87,60 @@ void lowerScore()
             if (dominated[v] == 1)
             {
                 --score[v];
-                --subscore[v];
+                // --subscore[v];
             }
             for (int n = 0; n < v_degree[v]; ++n)
             {
                 if (dominated[v_adj[v][n]] == 1)
                 {
                     --score[v];
-                    --subscore[v];
+                    // --subscore[v];
                 }
             }
         }
     } // 删去点C中的v后的分数改变量，因为对于一个支配集加入点没有帮助
 }
+
+
+//根据定义初始化subscore
+void initSubScore()
+{
+    for (int v = 1; v < v_num + 1; v++)
+    {
+        int tempSubScore = 0;       //TODO：本来应该定义为double，但是在一个例子中int效果更好
+        //v在D中，subscore为负
+        if (v_in_c[v])
+        {
+            if (dominated[v] == 1)
+            {
+                tempSubScore -= weight_backup[v];
+                for (size_t n = 0; n < v_degree[v]; n++)
+                {
+                    int neighbor = v_adj[v][n];
+                    if (dominated[neighbor] == 1)
+                    {
+                        tempSubScore -= weight_backup[neighbor];
+                    }
+                }
+            }
+        }
+        else
+        {
+            //v不在D中, subscore为正
+            tempSubScore += weight_backup[v];
+            for (size_t n = 0; n < v_degree[v]; n++)
+            {
+                int neighbor = v_adj[v][n];
+                if (dominated[neighbor] == 0)
+                {
+                    tempSubScore += weight_backup[neighbor];
+                }
+            }
+        }
+        subscore[v] = tempSubScore;
+    }
+}
+
 
 /**
  加入某个点后将点周围的连通分量连接起来
@@ -252,6 +293,7 @@ void ConstructByInitScore()
     c_size = ds_size;
     fill_n(score, v_num + 1, 0);
     lowerScore();
+    initSubScore();
     UpdateBestSolution();
 
     //初始化所有candidate用于寻找割点

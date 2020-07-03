@@ -476,13 +476,12 @@ int ChooseRemoveVTopof()
 int ChooseRemoveVTopofBMS(int count, int choice)
 {
     int v, i;
-    long best_score = -weightthreshold;
+    double best_score = -weightthreshold;
     int best_remove_v = -1;
     const int toberemovedNum1 = (int)(count);
     int toberemoved1[toberemovedNum1];
     int topIndex = 0;
-    int curscore;
-    //TODO:如果选择的顶点不符合选择策略，则当前次数浪费，应该把i++挪到选择策略的else里
+    double cscore;     // subscore/weight，取最大，因为此时subscore是负的
     for (i = 0; i < count; i++)
     {
         if (choice == 1)
@@ -492,21 +491,19 @@ int ChooseRemoveVTopofBMS(int count, int choice)
         //if(isCut[v]==1||v_fixed[v]==1||v==choosedadd_v)
         if (inToberemoved[v] == 0 || v_fixed[v] == 1 || v == choosedadd_v || isCut[v] == 1)
             continue;
-        //TODO:什么意思
-        curscore = score[v];
-        curscore = subscore[v];
+        cscore = subscore[v] / weight_backup[v];
         toberemoved1[topIndex++] = v;
         if (step > taburemove[v])
         {
             //if(score[v]>best_score)
-            if (curscore > best_score)
+            if (cscore > best_score)
             {
                 best_remove_v = v;
-                best_score = curscore;
+                best_score = cscore;
             }
-            else if (curscore == best_score && time_stamp[v] < time_stamp[best_remove_v])
+            else if (cscore == best_score && time_stamp[v] < time_stamp[best_remove_v])
                 best_remove_v = v;
-            else if (curscore == best_score)
+            else if (cscore == best_score)
                 if ((dominated[v] < dominated[best_remove_v]) || (dominated[v] == dominated[best_remove_v] && time_stamp[v] < time_stamp[best_remove_v]))
                     best_remove_v = v; //关乎safety！！！
         }
@@ -597,8 +594,8 @@ int ChooseAddVsubscorefast(int count = 40)
 {
     // TODO: proof there is at least one avaible add_v
     int base_v, add_v;
-    int curScore;
-    long best_score = -weightthreshold;
+    double cscore;     //  subscore/weight，取最大
+    double best_score = -weightthreshold;
     int best_add_v = -1;
     std::vector<int> best_vec;
     for (int i = 0; i < undom_stack_fill_pointer; ++i)
@@ -609,16 +606,15 @@ int ChooseAddVsubscorefast(int count = 40)
             add_v = v_adj[base_v][j];
             if (isgrey[add_v])
             {
-                curScore = score[add_v]; //灰点
-                curScore = subscore[add_v];
+                cscore = subscore[add_v] / weight_backup[add_v];
                 if (conf_change[add_v] == 1)
                 {
-                    if (curScore > best_score)
+                    if (cscore > best_score)
                     {
                         best_add_v = add_v;
-                        best_score = curScore;
+                        best_score = cscore;
                     }
-                    else if (curScore == best_score)
+                    else if (cscore == best_score)
                     {
                         if ((dominated[add_v] > dominated[best_add_v]) || (dominated[add_v] == dominated[best_add_v] && time_stamp[add_v] < time_stamp[best_add_v]))
                             best_add_v = add_v;
@@ -649,13 +645,13 @@ int ChooseAddVsubscorefast(int count = 40)
                 add_v = v_adj[base_v][j];
                 if (isgrey[add_v])
                 {
-                    curScore = subscore[add_v];
-                    if (curScore > best_score)
+                    cscore = subscore[add_v] / weight_backup[add_v];
+                    if (cscore > best_score)
                     {
                         best_add_v = add_v;
-                        best_score = curScore;
+                        best_score = cscore;
                     }
-                    else if (curScore == best_score)
+                    else if (cscore == best_score)
                     {
                         if ((dominated[add_v] > dominated[best_add_v]) || (dominated[add_v] == dominated[best_add_v] && time_stamp[add_v] < time_stamp[best_add_v]))
                             best_add_v = add_v;

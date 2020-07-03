@@ -36,10 +36,11 @@ int BuildInstance(string filename)
             /*****************new******************/
             weight = new double[v_num + 1];
             weight_backup = new double[v_num + 1];
+            //TODO:暂时更改为totalWeight
             weightthreshold = (v_num + 1) * para_gama;
             v_threshold = new int[v_num + 1];
             score = new int[v_num + 1];
-            subscore = new int[v_num + 1];
+            subscore = new double[v_num + 1];
             time_stamp = new llong[v_num + 1];
             isgrey = new int[v_num + 1];
             greypointset = new int[v_num + 1];
@@ -154,6 +155,7 @@ int BuildInstance(string filename)
         infile >> tempStr;
     }
     t_weight = totalweight;
+    weightthreshold = totalweight;
 
     infile.close();
 
