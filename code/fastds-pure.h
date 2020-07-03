@@ -381,6 +381,7 @@ bool Remove(int v)
 }
 
 //增加权重，只对白点及其周围点
+//TODO:权重设置阈值
 void addWeight(int node)
 {
     weight[node]++;

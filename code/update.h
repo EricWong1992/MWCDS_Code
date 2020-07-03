@@ -86,6 +86,7 @@ void ResetCandidate()
     outof_candidate_size = i;
 } //根据v_in_c来重置在候选解C中的点
 
+//TODO:当前算法找到的解是mcds，不是mwcds，权值不一定最小
 void UpdateBestSolution()
 {
 //    int v;
@@ -104,7 +105,6 @@ void UpdateBestSolution()
             }
         }
 //        cout << "weight:" << t_weight << endl;
-        //TODO:当前程序找到的解是mcds，不是mwcds，权值不一定最小
         t_weight = tempWeight;
 
         best_c_size = c_size;
@@ -250,6 +250,7 @@ bool judgeCut(int node)
 } //判断点node是否是割点TODO：恢复low，dnf，iscut
 
 //使用参数对权重进行更新
+//TODO:权重设置阈值
 void updateWeight()
 {
     for (int i = 1; i <= v_num; i++)
