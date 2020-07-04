@@ -91,6 +91,7 @@ void AddInit(int v)
     int pos;
 
     v_in_c[v] = 1;
+    currentWeight += weight_backup[v];
 
     int new_score = -score[v];
     init_increase_dominate(v);
@@ -107,6 +108,7 @@ void AddInit(int v)
 void RemoveInit(int v)
 {
     v_in_c[v] = 0;
+    currentWeight -= weight_backup[v];
     c_size--;
     int last_candidate_v = candidate[--candidate_size];
     int index = index_in_candidate[v];

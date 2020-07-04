@@ -92,6 +92,7 @@ int BuildInstance(string filename)
             childnum = new int[v_num + 1];
             inToberemoved = new int[v_num + 1];
             indextoberemoved = new int[v_num + 1];
+            removedNodeNeighbor = new Array(v_num);
             /***********************************/
 
             my_heap_count = 0;
@@ -154,8 +155,8 @@ int BuildInstance(string filename)
         }
         infile >> tempStr;
     }
-    t_weight = totalweight;
     weightthreshold = totalweight;
+    bestWeight = totalweight;
 
     infile.close();
 
@@ -205,6 +206,7 @@ void FreeMemory()
         delete[] v_adj[v];
         delete[] v_edges[v];
     }
+    delete removedNodeNeighbor;
     delete[] dominated;
     delete[] undom_stack;
     delete[] index_in_undom_stack;

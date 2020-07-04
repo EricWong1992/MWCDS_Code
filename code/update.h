@@ -86,31 +86,23 @@ void ResetCandidate()
     outof_candidate_size = i;
 } //根据v_in_c来重置在候选解C中的点
 
-//TODO:当前算法找到的解是mcds，不是mwcds，权值不一定最小
 void UpdateBestSolution()
 {
-//    int v;
-
-    if (c_size < best_c_size)
+    //    int v;
+    if (currentWeight < bestWeight)
     {
+        best_c_size = c_size;
+        best_comp_time = TimeElapsed();
+        best_step = step;
+        bestWeight = currentWeight;
+    }
+    // if (c_size < best_c_size)
+    // {
         //        for (v = 1; v < v_num + 1; v++) {
         //            best_v_in_c[v] = v_in_c[v];
         //        }
         //memcpy(best_v_in_c,v_in_c,sizeof(int)*(v_num+1));
-        double tempWeight = 0;
-        for (int i = 1; i < v_num + 1; ++i) {
-            if (v_in_c[i] == 1)
-            {
-                tempWeight += weight_backup[i];
-            }
-        }
-//        cout << "weight:" << t_weight << endl;
-        t_weight = tempWeight;
-
-        best_c_size = c_size;
-        best_comp_time = TimeElapsed();
-        best_step = step;
-    }
+    // }
     // #ifndef NDEBUG
     //std::cout << best_c_size << '\t' << step << '\t' << TimeElapsed()<< std::endl;
     // #endif

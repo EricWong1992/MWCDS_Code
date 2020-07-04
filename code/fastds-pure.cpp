@@ -24,9 +24,9 @@ int main(int argc, char *argv[])
     while (TimeElapsed() < cutoff_time)
     {
         if (control % 2 == 0)
-            LocalSearch1();
+            newLocalSearch1();
         else
-            LocalSearch();
+            newLocalSearch();
         control++;
     }
     FreeMemory();
@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     //outfile="/home/libh/CDStuning11_6/20w_1b_2_10/sample/"+outfile;
     //freopen(outfile.data(),"a+",stdout);
     cout << "best_c_size:" << best_c_size << endl << "best_comp_time:" << best_comp_time << endl;
-    cout << "t_weight:" << t_weight << endl;
+    cout << "best_weight:" << bestWeight << endl;
     //fclose(stdout);
     return 0;
 }

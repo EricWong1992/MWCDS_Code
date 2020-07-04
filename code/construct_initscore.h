@@ -234,6 +234,7 @@ void addNodeInit(int i)
 {
     updateS(i); //更新候选集
     v_in_c[i] = 1;
+    currentWeight += weight_backup[i];
     isInS[i] = false;
     //被支配了多次
     if (dominated[i] != 0)

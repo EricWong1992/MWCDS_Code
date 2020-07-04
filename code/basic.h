@@ -10,6 +10,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include "Array.h"
 
 using namespace std;
 
@@ -61,7 +62,7 @@ int insTimes = 2;
 
 //Edge *edge;
 //int *edge_weight;
-
+int maxNeighborSize = 3;       //在一次迭代中最大同时删除顶点数量
 double *weight;
 double *weight_backup;
 double weight_para_aphle = 0.3; //权重调整系数
@@ -69,6 +70,7 @@ double *subscore;                  //带权的分数，可以变支配的点的�
 int *toberemoved;
 int *outofcut;
 int outofcutnum;
+Array* removedNodeNeighbor;     //用来暂存删除顶点的邻居
 
 int *score;
 int *initscore; //初始化阶段的分数，即2Wv+Cv-1
@@ -161,10 +163,9 @@ llong averagedegree = 0;
 //double Temperature;
 double totalweight;
 double weightthreshold; //权重阈值
+double currentWeight = 0; //当前解权重和
+double bestWeight;  //当前最优解权重和
 //llong check_size = 0;
-
-//mwcds相关，与totalweight作打分不同
-double t_weight;    //总权重
 
 int *father;
 int *childnum;
