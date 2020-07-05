@@ -57,13 +57,17 @@ public:
 
     void insert_element(int e)
     {
-        array[array_size] = e;
-        index_in_array[e] = array_size;
-        array_size++;
+        if (array_size < array_capacity - 1)
+        {
+            array[array_size] = e;
+            index_in_array[e] = array_size;
+            array_size++;
+        }
     }
 
     void delete_element(int e)
     {
+        if (!is_in_array(e)) return;
         array_size--;
         int last_e = array[array_size];
         int e_pos = index_in_array[e];
