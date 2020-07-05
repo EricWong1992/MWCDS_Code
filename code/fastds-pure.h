@@ -1074,7 +1074,7 @@ void newLocalSearch()
             else
             {
                 //从removedNodeNeighbors中随机选一个点
-                if (removedNodeNeighbor->size() != 0 && toberemovedNum != 0)
+                if (removedNodeNeighbor->size() != 0 && candidate_size != 0)
                 {
                     best_removed_v = removedNodeNeighbor->rand_element();
                 }
