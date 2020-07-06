@@ -40,6 +40,9 @@ EdgeLib *edge; //存储边信息
 
 chrono::steady_clock::time_point start;
 
+//setting
+bool running_is_interrupted = false;
+
 //llong max_steps;
 llong step = 1;
 llong stepaction;

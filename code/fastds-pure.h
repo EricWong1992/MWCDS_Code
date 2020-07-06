@@ -1089,7 +1089,10 @@ void newLocalSearch()
                     }
                 }
                 Remove(best_removed_v);
-                MarkCut();
+                if (candidate_size != 0)
+                {
+                    MarkCut();
+                }
                 time_stamp[choosedremove_v] = step;
                 step++;
             }
@@ -1097,6 +1100,12 @@ void newLocalSearch()
         //选点添加
         while (undom_stack_fill_pointer != 0)
         {
+            int timenow = TimeElapsed();
+            if (timenow > cutoff_time)
+            {
+                running_is_interrupted = true;
+                return;
+            }
             int best_add_v = ChooseAddVsubscorefast();
             Add(best_add_v);
             time_stamp[best_add_v] = step;
