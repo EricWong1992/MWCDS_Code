@@ -1033,14 +1033,13 @@ void newLocalSearch()
             instance0 = floor0 * insTimes;
             flag = 1;
         }
-        if (stepaction % try_step == 0)
+        if (stepAction % try_step == 0)
         {
             int timenow = TimeElapsed();
             if (timenow > cutoff_time)
                 return;
-            if (stepaction > gap0)
+            if (stepAction > gap0)
             { //还在爬坡中
-                //if(stepaction>gap0){
                 if (improvementCount > 10)
                 {
                     instance0 -= floor0;
@@ -1090,6 +1089,7 @@ void newLocalSearch()
                     }
                 }
                 Remove(best_removed_v);
+                MarkCut();
                 time_stamp[choosedremove_v] = step;
                 step++;
             }
