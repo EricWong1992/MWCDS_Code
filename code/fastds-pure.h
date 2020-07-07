@@ -523,6 +523,40 @@ int ChooseRemoveVTopofBMS(int count, int choice)
     }
 }
 
+int ChooseRemoveVFromArray(Array *removedNodeNeighbor)
+{
+    int best_remove_v = -1;
+    double cscore;
+    double best_cscore = -weightthreshold;
+    for (size_t i = 0; i < removedNodeNeighbor->size(); i++)
+    {
+        int v = removedNodeNeighbor->element_at(i);
+        if (inToberemoved[v] == 0 || v_fixed[v] == 1 || isCut[v] == 1)
+            continue;
+        cscore = subscore[v] / weight_backup[v];
+        if (step > taburemove[v])
+        {
+            if (cscore > best_cscore)
+            {
+                best_remove_v = v;
+                best_cscore = cscore;
+            }
+            else if (cscore == best_cscore && time_stamp[v] < time_stamp[best_remove_v])
+            {
+                best_remove_v = v;
+            }
+            else if (cscore == best_cscore)
+            {
+                if ((dominated[v] < dominated[best_remove_v]) || (dominated[v] == dominated[best_remove_v] && time_stamp[v] < time_stamp[best_remove_v]))
+                {
+                    best_remove_v = v;
+                }
+            }
+        }
+    }
+    return best_remove_v;
+}
+
 int ChooseAddVsubscore(int count = 100)
 {
     // TODO: proof there is at least one avaible add_v
@@ -739,7 +773,8 @@ void MarkCut()
         isCut[cutPointSet[i]] = 0; //将之前割点给还
     //toberemoved恢复初始状态
     toberemovedNum = 0;
-    for (int i = 0; i < v_num; ++i) {
+    for (int i = 0; i < v_num; ++i)
+    {
         indextoberemoved[i] = toberemovedNum;
         toberemoved[toberemovedNum++] = i;
         inToberemoved[i] = 1;
@@ -853,11 +888,13 @@ void newLocalSearch1()
                 //从removedNodeNeighbors中随机选一个点
                 if (removedNodeNeighbor->size() != 0 && toberemovedNum != 0)
                 {
-                    best_removed_v = removedNodeNeighbor->rand_element();
+                    best_removed_v = ChooseRemoveVFromArray(removedNodeNeighbor);
                 }
             }
             if (best_removed_v != -1)
             {
+                Remove(best_removed_v);
+                removeUpdate(best_removed_v);
                 for (int n = 0; n < v_degree[best_removed_v]; ++n)
                 {
                     int neighbor = v_adj[best_removed_v][n];
@@ -866,8 +903,6 @@ void newLocalSearch1()
                         removedNodeNeighbor->insert_element(neighbor);
                     }
                 }
-                Remove(best_removed_v);
-                removeUpdate(best_removed_v);
                 time_stamp[best_removed_v] = step;
                 step++;
             }
@@ -879,11 +914,6 @@ void newLocalSearch1()
             Add(best_add_v);
             addUpdate(best_add_v);
             time_stamp[best_add_v] = step;
-            undomafteradd = undom_stack_fill_pointer;
-            if (undom_stack_fill_pointer < minUndom)
-            {
-                minUndom = undom_stack_fill_pointer; //局部最优解
-            }
             //增加未支配顶点权重
             for (size_t i = 0; i < undom_stack_fill_pointer; i++)
             {
@@ -1075,11 +1105,16 @@ void newLocalSearch()
                 //从removedNodeNeighbors中随机选一个点
                 if (removedNodeNeighbor->size() != 0 && candidate_size != 0)
                 {
-                    best_removed_v = removedNodeNeighbor->rand_element();
+                    best_removed_v = ChooseRemoveVFromArray(removedNodeNeighbor);
                 }
             }
             if (best_removed_v != -1)
             {
+                Remove(best_removed_v);
+                if (candidate_size != 0)
+                {
+                    MarkCut();
+                }
                 for (int n = 0; n < v_degree[best_removed_v]; ++n)
                 {
                     int neighbor = v_adj[best_removed_v][n];
@@ -1088,12 +1123,7 @@ void newLocalSearch()
                         removedNodeNeighbor->insert_element(neighbor);
                     }
                 }
-                Remove(best_removed_v);
-                if (candidate_size != 0)
-                {
-                    MarkCut();
-                }
-                time_stamp[choosedremove_v] = step;
+                time_stamp[best_removed_v] = step;
                 step++;
             }
         }
@@ -1109,11 +1139,6 @@ void newLocalSearch()
             int best_add_v = ChooseAddVsubscorefast();
             Add(best_add_v);
             time_stamp[best_add_v] = step;
-            undomafteradd = undom_stack_fill_pointer;
-            if (undom_stack_fill_pointer < minUndom)
-            {
-                minUndom = undom_stack_fill_pointer; //局部最优解
-            }
             //增加未支配顶点权重
             for (size_t i = 0; i < undom_stack_fill_pointer; i++)
             {
