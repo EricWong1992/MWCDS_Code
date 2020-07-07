@@ -15,6 +15,13 @@ int main(int argc, char *argv[])
     delete para;
 
     BuildInstance(instanceName);
+    //等bigcnt改好这里去掉
+    if (!CheckGraphIsConnected())
+    {
+        cout << "Running is interrupted: Graph is not connected" << endl;
+        FreeMemory();
+        return 0;
+    }
     srand(seed);
     start = chrono::steady_clock::now();
     ConstructByInitScore();
@@ -35,24 +42,10 @@ int main(int argc, char *argv[])
 
     if (running_is_interrupted)
     {
-        /*Debug阶段使用
-         * 被打断判断是否因为图为不连通图
-         * (不会计算耗时)
-         * */
-        if (!CheckGraphIsConnected())
-        {
-            cout << "Running is interrupted: Graph is not connected" << endl;
-        } else
-        {
-            cout << "Running is interrupted: Time is not enough." << endl;
-            cout << "best_c_size:" << best_c_size << endl << "best_comp_time:" << best_comp_time << endl;
-            cout << "best_weight:" << bestWeight << endl;
-        }
-    } else
-    {
-        cout << "best_c_size:" << best_c_size << endl << "best_comp_time:" << best_comp_time << endl;
-        cout << "best_weight:" << bestWeight << endl;
+        cout << "Running is interrupted: Time is not enough." << endl;
     }
+    cout << "best_c_size:" << best_c_size << endl << "best_comp_time:" << best_comp_time << endl;
+    cout << "best_weight:" << bestWeight << endl;
     //    string outfile = argv[1];
     //    string seednum = argv[3];
     //outfile="/home/libh/CDStuning11_6/20w_1b_2_10/sample/"+outfile;
