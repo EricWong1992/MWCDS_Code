@@ -95,6 +95,7 @@ void UpdateBestSolution()
         best_comp_time = TimeElapsed();
         best_step = step;
         bestWeight = currentWeight;
+        memcpy(best_v_in_c, v_in_c, sizeof(int)*(v_num + 1));
     }
     // if (c_size < best_c_size)
     // {
