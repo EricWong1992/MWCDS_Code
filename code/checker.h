@@ -117,3 +117,46 @@ bool CheckSolution()
             return false;
     return true;
 }
+
+// check if the solution is connected
+bool CheckSolutionIsConnected()
+{
+    queue<int> q;
+    vector<int> visit(v_num + 1, 0);
+    for (int v = 1; v < v_num + 1; ++v) {
+        if (best_v_in_c[v])
+        {
+            q.push(v);
+            visit[v]++;
+            break;
+        }
+    }
+
+    int visitCount = 0;
+    while (!q.empty())
+    {
+        int v = q.front();
+        q.pop();
+        visitCount++;
+        for (int n = 0; n < v_degree[v]; ++n) {
+            int neighbor = v_adj[v][n];
+            if (best_v_in_c[neighbor] && visit[neighbor] == 0)
+            {
+                q.push(neighbor);
+                visit[neighbor]++;
+            }
+        }
+    }
+    return visitCount == best_c_size;
+}
+
+bool CheckGraphIsConnected()
+{
+    for (int i = 1; i < v_num + 1; ++i) {
+        if (v_degree[i] == 0)
+        {
+            return false;
+        }
+    }
+    return true;
+}
