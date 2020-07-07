@@ -18,8 +18,6 @@ int main(int argc, char *argv[])
     srand(seed);
     start = chrono::steady_clock::now();
     ConstructByInitScore();
-    //cout<<"constructDS "<<best_c_size<<endl;
-    //cout<<endl;
     int control = 0;
     while (TimeElapsed() < cutoff_time)
     {
@@ -29,31 +27,29 @@ int main(int argc, char *argv[])
             newLocalSearch();
         control++;
     }
-    /*Debug阶段使用
-     * 被打断判断是否因为图为不连通图
-     * (不会计算耗时)
-     * */
-    bool is_not_connected = false;
+
+    if (!CheckSolutionIsConnected())
+    {
+        cout << "Solution is not Connected." << endl;
+    }
+
     if (running_is_interrupted)
     {
-        for (int i = 1; i < v_num + 1; ++i) {
-            if (v_degree[i] == 0)
-            {
-                is_not_connected = true;
-
-                break;
-            }
-        }
-    }
-    if (is_not_connected)
-    {
-        cout << "Running is interrupted: Graph is not connected" << endl;
-    } else
-    {
-        if (running_is_interrupted)
+        /*Debug阶段使用
+         * 被打断判断是否因为图为不连通图
+         * (不会计算耗时)
+         * */
+        if (!CheckGraphIsConnected())
+        {
+            cout << "Running is interrupted: Graph is not connected" << endl;
+        } else
         {
             cout << "Running is interrupted: Time is not enough." << endl;
+            cout << "best_c_size:" << best_c_size << endl << "best_comp_time:" << best_comp_time << endl;
+            cout << "best_weight:" << bestWeight << endl;
         }
+    } else
+    {
         cout << "best_c_size:" << best_c_size << endl << "best_comp_time:" << best_comp_time << endl;
         cout << "best_weight:" << bestWeight << endl;
     }
