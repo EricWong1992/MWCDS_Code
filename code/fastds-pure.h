@@ -375,8 +375,9 @@ bool Remove(int v)
         conf_change[u] = 1;               //一阶CC
     }
     conf_change[v] = 0;
+    tabuadd[v]=step+tabutenue+rand()%5;
     return true;
-    //tabuadd[v]=step+tabutenue+rand()%5;
+
 }
 
 //增加权重，只对白点及其周围点
@@ -761,6 +762,82 @@ long ChooseAddtabu(int count = 10)
     }
 }
 
+int ChooseAddVtabufast(int count = 40)
+{
+    // TODO: proof there is at least one avaible add_v
+    int base_v, add_v;
+    double cscore; //  subscore/weight，取最大
+    double best_score = -weightthreshold;
+    int best_add_v = -1;
+    std::vector<int> best_vec;
+    for (int i = 0; i < undom_stack_fill_pointer; ++i)
+    {
+        base_v = undom_stack[i];
+        for (int j = 0; j < v_degree[base_v]; ++j)
+        {
+            add_v = v_adj[base_v][j];
+            if (isgrey[add_v])
+            {
+                cscore = subscore[add_v] / weight_backup[add_v];
+                if (step>=tabuadd[add_v])
+                {
+                    if (cscore > best_score)
+                    {
+                        best_add_v = add_v;
+                        best_score = cscore;
+                    }
+                    else if (cscore == best_score)
+                    {
+                        if ((dominated[add_v] > dominated[best_add_v]) || (dominated[add_v] == dominated[best_add_v] && time_stamp[add_v] < time_stamp[best_add_v]))
+                            best_add_v = add_v;
+                    } //关乎safety
+                }
+            }
+        }
+    }
+    if (best_add_v != -1)
+        return best_add_v; //此处找到未被禁的最大分数的点
+    else
+    {
+        best_add_v = -1;
+        best_score = -weightthreshold;
+        map<int, int> m;
+        int mindex = 0;
+        for (int i = 0; i < count; i++)
+        {
+            base_v = undom_stack[rand() % undom_stack_fill_pointer];
+            if (m.find(base_v) == m.end())
+                m[mindex++] = base_v;
+            else
+            {
+                continue;
+            }
+            for (int j = 0; j < v_degree[base_v]; ++j)
+            {
+                add_v = v_adj[base_v][j];
+                if (isgrey[add_v])
+                {
+                    cscore = subscore[add_v] / weight_backup[add_v];
+                    if (cscore > best_score)
+                    {
+                        best_add_v = add_v;
+                        best_score = cscore;
+                    }
+                    else if (cscore == best_score)
+                    {
+                        if ((dominated[add_v] > dominated[best_add_v]) || (dominated[add_v] == dominated[best_add_v] && time_stamp[add_v] < time_stamp[best_add_v]))
+                            best_add_v = add_v;
+                    }
+                }
+            }
+        }//此处用BMS找白点周围的灰点分数最大的
+        if (best_add_v != -1)
+            return best_add_v;
+        else
+            return greypointset[rand() % greypointnum];
+    }
+}//如果能找到CC为1，并且在白点周围的灰点，则选它，否则就用BMS选择一个白点周围的灰点，否则就随机选一个灰点
+
 //标记候选解中割点
 void MarkCut()
 {
@@ -900,7 +977,8 @@ void newLocalSearch1()
         //选点添加
         while (undom_stack_fill_pointer != 0)
         {
-            int best_add_v = ChooseAddVsubscorefast();
+            //int best_add_v = ChooseAddVsubscorefast();
+            int best_add_v = ChooseAddVtabufast();
             Add(best_add_v);
             addUpdate(best_add_v);
             time_stamp[best_add_v] = step;
@@ -1126,7 +1204,8 @@ void newLocalSearch()
                 running_is_interrupted = true;
                 return;
             }
-            int best_add_v = ChooseAddVsubscorefast();
+//            int best_add_v = ChooseAddVsubscorefast();
+            int best_add_v = ChooseAddVtabufast();
             Add(best_add_v);
             time_stamp[best_add_v] = step;
             //增加未支配顶点权重
