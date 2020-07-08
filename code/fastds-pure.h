@@ -532,7 +532,7 @@ int ChooseRemoveVFromArray(Array *removedNodeNeighbor)
     for (size_t i = 0; i < removedNodeNeighbor->size(); i++)
     {
         int v = removedNodeNeighbor->element_at(i);
-        if (inToberemoved[v] == 0 || v_fixed[v] == 1 || isCut[v] == 1)
+        if (v_fixed[v] == 1)
             continue;
         cscore = subscore[v] / weight_backup[v];
         if (step > taburemove[v])
@@ -962,10 +962,25 @@ void newLocalSearch1()
             {
                 Remove(best_removed_v);
                 removeUpdate(best_removed_v);
+                // if (root == 36 && v_in_c[36])
+                // {
+                // bool flag = true;
+                // for (int j = 0; j < v_degree[36]; ++j) {
+                //     int u = v_adj[36][j];
+                //     if (father[u] == 36) {
+                //         flag = false;
+                //         break;
+                //     }
+                // }
+                // if (flag)
+                //     int a = 1;
+                // }
+
+                removedNodeNeighbor->delete_element(best_removed_v);
                 for (int n = 0; n < v_degree[best_removed_v]; ++n)
                 {
                     int neighbor = v_adj[best_removed_v][n];
-                    if (inToberemoved[neighbor] == 1 && !removedNodeNeighbor->is_in_array(neighbor))
+                    if (v_in_c[neighbor] == 1 && inToberemoved[neighbor] == 1 && !removedNodeNeighbor->is_in_array(neighbor))
                     {
                         removedNodeNeighbor->insert_element(neighbor);
                     }
@@ -977,10 +992,24 @@ void newLocalSearch1()
         //选点添加
         while (undom_stack_fill_pointer != 0)
         {
-            //int best_add_v = ChooseAddVsubscorefast();
-            int best_add_v = ChooseAddVtabufast();
+           int best_add_v = ChooseAddVsubscorefast();
+            // int best_add_v = ChooseAddVtabufast();
             Add(best_add_v);
             addUpdate(best_add_v);
+            // if (root == 36 && v_in_c[36])
+            // {
+            //     bool flag = true;
+            //     for (int j = 0; j < v_degree[36]; ++j) {
+            //         int u = v_adj[36][j];
+            //         if (father[u] == 36) {
+            //             flag = false;
+            //             break;
+            //         }
+            //     }
+            //     if (flag)
+            //         int a = 1;
+            // }
+
             time_stamp[best_add_v] = step;
             //增加未支配顶点权重
             for (size_t i = 0; i < undom_stack_fill_pointer; i++)
@@ -1179,6 +1208,7 @@ void newLocalSearch()
             if (best_removed_v != -1)
             {
                 Remove(best_removed_v);
+                removedNodeNeighbor->delete_element(best_removed_v);
                 if (candidate_size != 0)
                 {
                     MarkCut();
@@ -1186,7 +1216,7 @@ void newLocalSearch()
                 for (int n = 0; n < v_degree[best_removed_v]; ++n)
                 {
                     int neighbor = v_adj[best_removed_v][n];
-                    if (isCut[neighbor] == 0 && !removedNodeNeighbor->is_in_array(neighbor))
+                    if (v_in_c[neighbor] == 1 && isCut[neighbor] == 0 && !removedNodeNeighbor->is_in_array(neighbor))
                     {
                         removedNodeNeighbor->insert_element(neighbor);
                     }
@@ -1204,8 +1234,8 @@ void newLocalSearch()
                 running_is_interrupted = true;
                 return;
             }
-//            int best_add_v = ChooseAddVsubscorefast();
-            int best_add_v = ChooseAddVtabufast();
+           int best_add_v = ChooseAddVsubscorefast();
+            // int best_add_v = ChooseAddVtabufast();
             Add(best_add_v);
             time_stamp[best_add_v] = step;
             //增加未支配顶点权重

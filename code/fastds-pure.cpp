@@ -46,6 +46,7 @@ int main(int argc, char *argv[])
     }
     cout << "best_c_size:" << best_c_size << endl << "best_comp_time:" << best_comp_time << endl;
     cout << "best_weight:" << bestWeight << endl;
+    cout << "step:" << step << endl;
     //    string outfile = argv[1];
     //    string seednum = argv[3];
     //outfile="/home/libh/CDStuning11_6/20w_1b_2_10/sample/"+outfile;

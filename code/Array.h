@@ -6,7 +6,7 @@
 
 class Array
 {
-protected:
+public:
     int *array;
     int *index_in_array;
     int array_size;
