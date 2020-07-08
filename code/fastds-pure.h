@@ -337,9 +337,6 @@ void removeUpdate(int v)
 //从C中删除点，相应地将该点从candidate中删除，并改变周围点的支配次数和分数，最后将自身的分数取相反数
 bool Remove(int v)
 {
-    if (v_in_c[v] == 0 || inToberemoved[v] == 0 || isCut[v] == 1)
-        return false; //不会反复删除,不会删除割点
-
     isgrey[v] = 1;
     indexingreypoint[v] = greypointnum;
     greypointset[greypointnum++] = v; //删掉一个非割点后，这个点肯定是灰点
@@ -487,12 +484,17 @@ int ChooseRemoveVTopofBMS(int count, int choice)
     for (i = 0; i < count; i++)
     {
         if (choice == 1)
+        {
             v = toberemoved[rand() % toberemovedNum]; //1为toberemoved
-        else                                          //0为candidate
-            v = candidate[rand() % candidate_size];
-        //if(isCut[v]==1||v_fixed[v]==1||v==choosedadd_v)
-        if (inToberemoved[v] == 0 || v_fixed[v] == 1 || v == choosedadd_v || isCut[v] == 1)
-            continue;
+            if (v_fixed[v] == 1)
+                continue;
+        }
+        else
+        {
+            v = candidate[rand() % candidate_size];//0为candidate
+            if (v_fixed[v] == 1 || isCut[v] == 1)
+                continue;
+        }
         cscore = subscore[v] / weight_backup[v];
         toberemoved1[topIndex++] = v;
         if (step > taburemove[v])
@@ -503,8 +505,6 @@ int ChooseRemoveVTopofBMS(int count, int choice)
                 best_remove_v = v;
                 best_score = cscore;
             }
-            else if (cscore == best_score && time_stamp[v] < time_stamp[best_remove_v])
-                best_remove_v = v;
             else if (cscore == best_score)
                 if ((dominated[v] < dominated[best_remove_v]) || (dominated[v] == dominated[best_remove_v] && time_stamp[v] < time_stamp[best_remove_v]))
                     best_remove_v = v; //关乎safety！！！
@@ -540,10 +540,6 @@ int ChooseRemoveVFromArray(Array *removedNodeNeighbor)
             {
                 best_remove_v = v;
                 best_cscore = cscore;
-            }
-            else if (cscore == best_cscore && time_stamp[v] < time_stamp[best_remove_v])
-            {
-                best_remove_v = v;
             }
             else if (cscore == best_cscore)
             {
@@ -773,12 +769,6 @@ void MarkCut()
         isCut[cutPointSet[i]] = 0; //将之前割点给还
     //toberemoved恢复初始状态
     toberemovedNum = 0;
-    for (int i = 0; i < v_num; ++i)
-    {
-        indextoberemoved[i] = toberemovedNum;
-        toberemoved[toberemovedNum++] = i;
-        inToberemoved[i] = 1;
-    }
     cutIndex = 0;
     root = candidate[rand() % candidate_size];
 
@@ -1118,7 +1108,7 @@ void newLocalSearch()
                 for (int n = 0; n < v_degree[best_removed_v]; ++n)
                 {
                     int neighbor = v_adj[best_removed_v][n];
-                    if (inToberemoved[neighbor] == 1 && !removedNodeNeighbor->is_in_array(neighbor))
+                    if (isCut[neighbor] == 0 && !removedNodeNeighbor->is_in_array(neighbor))
                     {
                         removedNodeNeighbor->insert_element(neighbor);
                     }
