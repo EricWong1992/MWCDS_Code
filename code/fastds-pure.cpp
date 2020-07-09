@@ -25,15 +25,8 @@ int main(int argc, char *argv[])
     srand(seed);
     start = chrono::steady_clock::now();
     ConstructByInitScore();
-    int control = 0;
-    while (TimeElapsed() < cutoff_time)
-    {
-        if (control % 2 == 0)
-            newLocalSearch1();
-        else
-            newLocalSearch();
-        control++;
-    }
+    // localSearchFramework1();
+    localSearchFramework2();
 
     if (!CheckSolutionIsConnected())
     {

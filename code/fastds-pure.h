@@ -888,10 +888,42 @@ void MarkCuttree()
         dnf[fixedSet[i]] = 0;
 }
 
+void localSearchFramework1()
+{
+    int control = 0;
+    while (TimeElapsed() < cutoff_time)
+    {
+        if (control % 2 == 0)
+        {
+            Framework1CutTree();
+        }
+        else
+        {
+            Framework1Tarjan();
+        }
+    }
+}
+
+void localSearchFramework2()
+{
+    Framework2Tarjan();
+//    int control = 0;
+//    while (TimeElapsed() < cutoff_time)
+//    {
+//        if (control % 2 == 0)
+//        {
+//            Framework2CutTree();
+//        }
+//        else
+//        {
+//            Framework2Tarjan();
+//        }
+//    }
+}
+
 int instance1 = floor1 * insTimes;
 int gap1 = floor1 * ceilingTimes;
-
-void newLocalSearch1()
+void Framework1CutTree()
 {
     if (candidate_size < 100)
     {
@@ -964,21 +996,7 @@ void newLocalSearch1()
             {
                 Remove(best_removed_v);
                 removeUpdate(best_removed_v);
-                // if (root == 36 && v_in_c[36])
-                // {
-                // bool flag = true;
-                // for (int j = 0; j < v_degree[36]; ++j) {
-                //     int u = v_adj[36][j];
-                //     if (father[u] == 36) {
-                //         flag = false;
-                //         break;
-                //     }
-                // }
-                // if (flag)
-                //     int a = 1;
-                // }
-
-//                removedNodeNeighbor->delete_element(best_removed_v);
+                // removedNodeNeighbor->delete_element(best_removed_v);
                 for (int n = 0; n < v_degree[best_removed_v]; ++n)
                 {
                     int neighbor = v_adj[best_removed_v][n];
@@ -998,20 +1016,6 @@ void newLocalSearch1()
             // int best_add_v = ChooseAddVtabufast();
             Add(best_add_v);
             addUpdate(best_add_v);
-            // if (root == 36 && v_in_c[36])
-            // {
-            //     bool flag = true;
-            //     for (int j = 0; j < v_degree[36]; ++j) {
-            //         int u = v_adj[36][j];
-            //         if (father[u] == 36) {
-            //             flag = false;
-            //             break;
-            //         }
-            //     }
-            //     if (flag)
-            //         int a = 1;
-            // }
-
             time_stamp[best_add_v] = step;
             //增加未支配顶点权重
             for (size_t i = 0; i < undom_stack_fill_pointer; i++)
@@ -1054,96 +1058,145 @@ void newLocalSearch1()
     }
 }
 
-void LocalSearch1()
+void Framework2CutTree()
 {
     if (candidate_size < 100)
+    {
         return;
+    }
     try_step = 10000;
-    int stepaction = 1; //实际走过的步数
+    int stepAction = 1; //实际走过的步数
     long NoImpro_trystep = 50000;
     long NOimprovementstep = 0;
-    long improvementCOUNT = 0;
-    // int timeStart=TimeElapsed();
-    steppre = 1LL; //前一次更新的步骤数
-                   // cout<<"\n\nit's fast cutPoint's Turn\n\n";
+    long improvementCount = 0;
+
+    int neighborSize = 1;
     MarkCuttree();
     while (true)
     {
-        if (undom_stack_fill_pointer == 0)
+        if (undom_stack_fill_pointer == 0 && toberemovedNum == 0)
         {
-            if (steppre != step)
-                UpdateBestSolution();
-            //不考虑将候选解大小删为空的情况libohan，防止出现模0错误
-            //wangkai:UpdateTargetSize传的参数为1，即从toberemoved中选点删除，所以这里应该判断是toberemoved的数量
-            if (toberemovedNum == 0)
-                return;
-            int BMS_remove_v = UpdateTargetSize(1);
-            removeUpdate(BMS_remove_v);
-            minUndom = undom_stack_fill_pointer;
-            steppre = step;
-            NOimprovementstep = 0;
-            improvementCOUNT++;
-            stepaction++;
-            continue;
-        } //当前已经支配了所有点，就要更新最优解并更新目标尺寸
-        if (stepaction % try_step == 0)
+            return;
+        }
+        if (stepAction % try_step == 0)
         {
-            //cout<<stepaction<<endl;
             int timenow = TimeElapsed();
             if (timenow > cutoff_time)
+            {
                 return;
-            if (stepaction > gap1)
-            { //时间片已经满
-                //if(stepaction>gap1){
-                if (improvementCOUNT > 10)
+            }
+            //时间片结束退出
+            if (stepAction > gap1)
+            {
+                if (improvementCount > 10)
                 {
-                    instance1 -= floor1; //爬坡中
+                    instance1 -= floor1;
                     if (instance1 < floor1)
+                    {
                         instance1 = floor1;
+                    }
                 }
                 return;
             }
+            //局部搜索中
             if (NOimprovementstep > instance1)
-            { //局部搜索中
+            {
                 instance1 += floor1;
                 if (instance1 > gap1)
+                {
                     instance1 = gap1;
+                }
                 return;
             }
-        }                                                //跳出搜索过程
-        choosedremove_v = ChooseRemoveVTopofBMS(100, 1); //删点的时候不使用了BMS from toberemoved
-        bool isremove = Remove(choosedremove_v);         //在remove操作中没有改变confC？？
-        removeUpdate(choosedremove_v);
-        time_stamp[choosedremove_v] = step;
-        if (undom_stack_fill_pointer != 0)
-        {
-            //choosedadd_v = ChooseAddVsubscorefast();//用最优选择法选择了最优的加入点
-            choosedadd_v = ChooseAddVsubscorefast();
-            bool is = Add(choosedadd_v); //加入的时候会调整周围的confC
-            addUpdate(choosedadd_v);
-            time_stamp[choosedadd_v] = step;
-            undomafteradd = undom_stack_fill_pointer; //当前解质量
-            if (undom_stack_fill_pointer < minUndom)
-                minUndom = undom_stack_fill_pointer; //局部最优解
         }
-        for (int i = 0; i < undom_stack_fill_pointer; i++)
-            addWeight(undom_stack[i]);
-        totalweight += undom_stack_fill_pointer;
-        step++;
-        stepaction++;
-        NOimprovementstep++;
-        if (totalweight > weightthreshold)
-            updateWeight();
+        //选点删除
+        removedNodeNeighbor->clear();
+        for (size_t i = 0; i < neighborSize; i++)
+        {
+            int best_removed_v = -1;
+            if (i == 0)
+            {
+                //BMS从可移除列表选一个点删除
+                best_removed_v = ChooseRemoveVTopofBMS(100, 1);
+            }
+            else
+            {
+                //从removedNodeNeighbors中随机选一个点
+                if (removedNodeNeighbor->size() != 0 && toberemovedNum != 0)
+                {
+                    best_removed_v = ChooseRemoveVFromArray(removedNodeNeighbor);
+                }
+            }
+            if (best_removed_v != -1)
+            {
+                Remove(best_removed_v);
+                removeUpdate(best_removed_v);
+                // removedNodeNeighbor->delete_element(best_removed_v);
+                for (int n = 0; n < v_degree[best_removed_v]; ++n)
+                {
+                    int neighbor = v_adj[best_removed_v][n];
+                    if (v_in_c[neighbor] == 1 && inToberemoved[neighbor] == 1 && !removedNodeNeighbor->is_in_array(neighbor))
+                    {
+                        removedNodeNeighbor->insert_element(neighbor);
+                    }
+                }
+                time_stamp[best_removed_v] = step;
+                step++;
+            }
+        }
+        //选点添加
+        while (undom_stack_fill_pointer != 0 && currentWeight < bestWeight)
+        {
+            int best_add_v = ChooseAddVsubscorefast();
+            // int best_add_v = ChooseAddVtabufast();
+            Add(best_add_v);
+            addUpdate(best_add_v);
+
+            time_stamp[best_add_v] = step;
+            step++;
+        }
+        //已全部支配，判断当前解是否为更优解
+        if (undom_stack_fill_pointer == 0 && currentWeight < bestWeight)
+        {
+            UpdateBestSolution();
+            neighborSize = 1;
+            improvementCount++;
+            NOimprovementstep = 0;
+        }
+        else
+        {
+            for (size_t i = 0; i < undom_stack_fill_pointer; i++)
+            {
+                addWeight(undom_stack[i]);
+            }
+            totalweight += undom_stack_fill_pointer;
+            //TODO:加入一些平滑策略
+            if (totalweight > weightthreshold)
+            {
+                updateWeight();
+            }
+            NOimprovementstep++;
+            if (neighborSize > maxNeighborSize)
+            {
+                neighborSize = 1;
+            }
+            else
+            {
+                neighborSize++;
+            }
+        }
+        stepAction++;
         if (NOimprovementstep % NoImpro_trystep == 0)
+        {
             MarkCuttree();
+        }
     }
 }
 
 int instance0 = floor0 * insTimes;
 int gap0 = floor0 * ceilingTimes;
 int flag = 0;
-
-void newLocalSearch()
+void Framework1Tarjan()
 {
     try_step = 10;
     int improvementCount = 0;
@@ -1278,18 +1331,16 @@ void newLocalSearch()
     }
 }
 
-//tarjan
-void LocalSearch()
+void Framework2Tarjan()
 {
-    //cout<<endl<<"now it's tarjan's turn"<<instance0<<" "<<gap0<<"\n";
     try_step = 10;
-    int improvementCOUNT = 0;
-    stepaction = 1LL;       //真实操作的步骤数
-    long NOimproveStep = 0; //未提升的步骤数
+    int improvementCount = 0;
+    int stepAction = 1;
+    long NOimprovementstep = 0;
     fill_n(inToberemoved, v_num + 1, 1);
     fill_n(conf_change, v_num + 1, 1);
+    int neighborSize = 1;
     MarkCut();
-    // int timeStart=TimeElapsed();
     while (true)
     {
         if (c_size < 5000 && flag == 0)
@@ -1299,15 +1350,14 @@ void LocalSearch()
             instance0 = floor0 * insTimes;
             flag = 1;
         }
-        if (stepaction % try_step == 0)
+        if (stepAction % try_step == 0)
         {
             int timenow = TimeElapsed();
             if (timenow > cutoff_time)
                 return;
-            if (stepaction > gap0)
+            if (stepAction > gap0)
             { //还在爬坡中
-                //if(stepaction>gap0){
-                if (improvementCOUNT > 10)
+                if (improvementCount > 10)
                 {
                     instance0 -= floor0;
                     if (instance0 < floor0)
@@ -1315,7 +1365,7 @@ void LocalSearch()
                 }
                 return;
             }
-            if (NOimproveStep > instance0)
+            if (NOimprovementstep > instance0)
             { //局部搜索中
                 instance0 += floor0;
                 if (instance0 > gap0)
@@ -1323,51 +1373,94 @@ void LocalSearch()
                 return;
             }
         }
-        //未支配集栈满指针归零，即栈空，已找到一个新的候选解
-        if (undom_stack_fill_pointer == 0)
+        if (candidate_size == 1)
         {
-            if (steppre != step)
-            {
-                steppre = step;
-                UpdateBestSolution();
-            }
-            if (candidate_size == 1)
-                return; //不考虑将候选解大小删为空的情况libohan，防止出现模0错误
-            UpdateTargetSize(0);
-            minUndom = undom_stack_fill_pointer;
-            //memset(tabuadd, 0, sizeof(long)*(v_num+1));
-            //memset(taburemove, 0, sizeof(long)*(v_num+1));
-            MarkCut();
-            stepaction++;
-            improvementCOUNT++;
-            NOimproveStep = 0;
-            continue;
-        } //当前已经支配了所有点，就要更新最优解并更新目标尺寸
-
-        choosedremove_v = ChooseRemoveVTopofBMS(100, 0); //删点的时候不使用了BMS from candidate
-        bool isremove = Remove(choosedremove_v);         //在remove操作中没有改变confC？？
-        time_stamp[choosedremove_v] = step;
-        if (undom_stack_fill_pointer != 0)
-        {
-            //choosedadd_v = ChooseAddV();
-            choosedadd_v = ChooseAddVsubscorefast(); //用最优选择法选择了最优的加入点
-            //choosedadd_v=ChooseAddtabu();
-            bool is = Add(choosedadd_v); //加入的时候会调整周围的confC
-            //addUpdate(choosedadd_v);
-            time_stamp[choosedadd_v] = step;
-            undomafteradd = undom_stack_fill_pointer; //当前解质量
-            if (undom_stack_fill_pointer < minUndom)
-                minUndom = undom_stack_fill_pointer; //局部最优解
+            return;
         }
-        for (int i = 0; i < undom_stack_fill_pointer; i++)
-            addWeight(undom_stack[i]);
-        totalweight += undom_stack_fill_pointer;
-        if (totalweight > weightthreshold)
-            //updateSubscore();
-            updateWeight();
+        //选点删除
+        removedNodeNeighbor->clear();
+        for (size_t i = 0; i < neighborSize; i++)
+        {
+            int best_removed_v = -1;
+            if (i == 0)
+            {
+                //BMS从可移除列表选一个点删除
+                best_removed_v = ChooseRemoveVTopofBMS(100, 0);
+            }
+            else
+            {
+                //从removedNodeNeighbors中随机选一个点
+                if (removedNodeNeighbor->size() != 0 && candidate_size != 0)
+                {
+                    best_removed_v = ChooseRemoveVFromArray(removedNodeNeighbor);
+                }
+            }
+            if (best_removed_v != -1)
+            {
+                Remove(best_removed_v);
+//                removedNodeNeighbor->delete_element(best_removed_v);
+                if (candidate_size != 0)
+                {
+                    MarkCut();
+                }
+                for (int n = 0; n < v_degree[best_removed_v]; ++n)
+                {
+                    int neighbor = v_adj[best_removed_v][n];
+                    if (v_in_c[neighbor] == 1 && isCut[neighbor] == 0 && !removedNodeNeighbor->is_in_array(neighbor))
+                    {
+                        removedNodeNeighbor->insert_element(neighbor);
+                    }
+                }
+                time_stamp[best_removed_v] = step;
+                step++;
+            }
+        }
+        //选点添加
+        while (undom_stack_fill_pointer != 0 && currentWeight < bestWeight)
+        {
+            int timenow = TimeElapsed();
+            if (timenow > cutoff_time)
+            {
+                running_is_interrupted = true;
+                return;
+            }
+           int best_add_v = ChooseAddVsubscorefast();
+            // int best_add_v = ChooseAddVtabufast();
+            Add(best_add_v);
+            time_stamp[best_add_v] = step;
+            step++;
+        }
+        //已全部支配，判断当前解是否为更优解
+        if (undom_stack_fill_pointer == 0 && currentWeight < bestWeight)
+        {
+            UpdateBestSolution();
+            neighborSize = 1;
+            improvementCount++;
+            NOimprovementstep = 0;
+        }
+        else
+        {
+            //TODO:增加权重平滑机制
+            for (size_t i = 0; i < undom_stack_fill_pointer; i++)
+            {
+                addWeight(undom_stack[i]);
+            }
+            totalweight += undom_stack_fill_pointer;
+            if (totalweight > weightthreshold)
+            {
+                updateWeight();
+            }
+            NOimprovementstep++;
+            if (neighborSize > maxNeighborSize)
+            {
+                neighborSize = 1;
+            }
+            else
+            {
+                neighborSize++;
+            }
+        }
+        stepAction++;
         MarkCut();
-        NOimproveStep++;
-        stepaction++;
-        step++;
     }
 }
