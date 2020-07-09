@@ -101,6 +101,7 @@ void addUpdate(int v)
         if (v_in_c[u] == 1)
         {
             uinc = u;
+            //找一个枝干结点
             if (childnum[u] != 0 && u != root)
             {
                 childnum[u]++;
@@ -130,6 +131,7 @@ void addUpdate(int v)
         }
         father[uinc] = v;
         childnum[v] = 1;
+        father[v] = 0;
         root = v;
     }
     else
@@ -532,7 +534,7 @@ int ChooseRemoveVFromArray(Array *removedNodeNeighbor)
     for (size_t i = 0; i < removedNodeNeighbor->size(); i++)
     {
         int v = removedNodeNeighbor->element_at(i);
-        if (v_fixed[v] == 1)
+        if (v_in_c[v] == 0 || inToberemoved[v] == 0 || v_fixed[v] == 1 || isCut[v] == 1)
             continue;
         cscore = subscore[v] / weight_backup[v];
         if (step > taburemove[v])
@@ -976,7 +978,7 @@ void newLocalSearch1()
                 //     int a = 1;
                 // }
 
-                removedNodeNeighbor->delete_element(best_removed_v);
+//                removedNodeNeighbor->delete_element(best_removed_v);
                 for (int n = 0; n < v_degree[best_removed_v]; ++n)
                 {
                     int neighbor = v_adj[best_removed_v][n];
@@ -1208,7 +1210,7 @@ void newLocalSearch()
             if (best_removed_v != -1)
             {
                 Remove(best_removed_v);
-                removedNodeNeighbor->delete_element(best_removed_v);
+//                removedNodeNeighbor->delete_element(best_removed_v);
                 if (candidate_size != 0)
                 {
                     MarkCut();
