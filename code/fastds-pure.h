@@ -33,13 +33,13 @@ void increase_dominate(long v, long source_v)
     if (dominated[v] == 0)
     { //该点被支配了，因此分数要降低
         --score[v];
-        subscore[v] -= weight[v];
+        subscore[v] -= frequency[v];
         // all make but one break
         for (int i = 0; i < v_degree[v]; ++i)
         {
             long u = v_adj[v][i];
             --score[u];
-            subscore[u] -= weight[v];
+            subscore[u] -= frequency[v];
         }
         Dom(v);
         onlydominate[v] = source_v; //libohan_10_6
@@ -53,7 +53,7 @@ void increase_dominate(long v, long source_v)
         if (v_in_c[v] == 1)
         {
             ++score[v];
-            subscore[v] += weight[v];
+            subscore[v] += frequency[v];
         } //本来该点如果被删除的话则该点就不被支配，但是，现在不会了，因为被其他点先支配了
         else
         {
@@ -62,13 +62,13 @@ void increase_dominate(long v, long source_v)
             //        int u = v_adj[v][i];
             //        if (v_in_c[u]) {
             //          ++score[u];
-            //            subscore[u]+=weight[v];
+            //            subscore[u]+=frequency[v];
             //          break;
             //        }
             //      }
             long u = onlydominate[v];
             ++score[u];
-            subscore[u] += weight[v];
+            subscore[u] += frequency[v];
         } //如果该点a原先只被b支配了，但前被另外的点支配了，那么原来b删除后，a就不被支配，但是现在不会不被支配，所以分数+1
     }
     ++dominated[v];
@@ -216,12 +216,12 @@ void decrease_dominate(int v)
     {
         // all score of neighbours are make
         ++score[v];
-        subscore[v] += weight[v];
+        subscore[v] += frequency[v];
         for (int i = 0; i < v_degree[v]; ++i)
         {
             int u = v_adj[v][i];
             ++score[u];
-            subscore[u] += weight[v];
+            subscore[u] += frequency[v];
         }
         Undom(v);
         isgrey[v] = 0;
@@ -236,7 +236,7 @@ void decrease_dominate(int v)
         if (v_in_c[v])
         {
             --score[v];
-            subscore[v] -= weight[v];
+            subscore[v] -= frequency[v];
         } //如果在C中并且被支配了两次，则这两次一次被自己支配，一次被删掉的点支配，则分数为删掉自己后的分数，会多减少1，因为删除自己后，自己被无支配了
         else
         {
@@ -247,7 +247,7 @@ void decrease_dominate(int v)
                 if (v_in_c[u])
                 {
                     --score[u]; //如果该点d被两个点支配了，那么一个是被删的点，另一个是另一个在C中的点p，删除p后，d会不被支配
-                    subscore[u] -= weight[v];
+                    subscore[u] -= frequency[v];
                     onlydominate[v] = u;
                     break;
                 }
@@ -386,7 +386,7 @@ bool Remove(int v)
 //TODO:权重设置阈值
 void addWeight(int node)
 {
-    weight[node]++;
+    frequency[node]++;
     for (int i = 0; i < v_degree[node]; i++)
         subscore[v_adj[node][i]]++;
     subscore[node]++;
@@ -394,7 +394,7 @@ void addWeight(int node)
 
 void minusWeight(int node, int tobeminus)
 {
-    weight[node] -= tobeminus;
+    frequency[node] -= tobeminus;
     if (dominated[node] == 0)
     {
         for (int i = 0; i < v_degree[node]; i++)

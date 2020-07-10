@@ -66,10 +66,10 @@ int insTimes = 2;
 //Edge *edge;
 //int *edge_weight;
 int maxNeighborSize = 3;       //在一次迭代中最大同时删除顶点数量
-double *weight;
+int *frequency;
 double *weight_backup;
 double weight_para_aphle = 0.3; //权重调整系数
-double *subscore;                  //带权的分数，可以变支配的点的权重和减去变不支配的点的权重和
+int *subscore;                  //带权的分数，可以变支配的点的权重和减去变不支配的点的权重和
 int *toberemoved;
 int *outofcut;
 int outofcutnum;

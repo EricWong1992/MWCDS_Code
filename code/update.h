@@ -248,10 +248,10 @@ void updateWeight()
 {
     for (int i = 1; i <= v_num; i++)
     {
-        int newweight = weight_para_aphle * weight[i];
+        int newweight = weight_para_aphle * frequency[i];
         if (newweight < 1)
             newweight = 1;
-        int tobeminus = (weight[i] - newweight);
+        int tobeminus = (frequency[i] - newweight);
         if (tobeminus > 0)
             minusWeight(i, tobeminus);
         totalweight -= tobeminus;
@@ -260,7 +260,7 @@ void updateWeight()
 
 void updateSubscore()
 {
-    fill_n(weight, v_num + 1, 1);
+    fill_n(frequency, v_num + 1, 1);
     memcpy(subscore, score, sizeof(int) * (v_num + 1));
     totalweight = v_num;
 }

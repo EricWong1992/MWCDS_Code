@@ -34,13 +34,12 @@ int BuildInstance(string filename)
             infile >> tempStr;
             infile >> v_num >> e_num;
             /*****************new******************/
-            weight = new double[v_num + 1];
+            frequency = new int[v_num + 1];
             weight_backup = new double[v_num + 1];
-            //TODO:暂时更改为totalWeight
             weightthreshold = (v_num + 1) * para_gama;
             v_threshold = new int[v_num + 1];
             score = new int[v_num + 1];
-            subscore = new double[v_num + 1];
+            subscore = new int[v_num + 1];
             time_stamp = new llong[v_num + 1];
             isgrey = new int[v_num + 1];
             greypointset = new int[v_num + 1];
@@ -131,7 +130,7 @@ int BuildInstance(string filename)
             int v;
             double vertex_weight;
             infile >> v >> vertex_weight;
-            weight[v] = vertex_weight;
+            frequency[v] = 1;
             weight_backup[v] = vertex_weight;
             totalweight += vertex_weight;
         }
@@ -155,7 +154,6 @@ int BuildInstance(string filename)
         }
         infile >> tempStr;
     }
-    weightthreshold = totalweight;
     bestWeight = totalweight;
 
     infile.close();
@@ -237,7 +235,7 @@ void FreeMemory()
     delete[] greypointset;
     delete[] isgrey;
     delete[] edge;
-    delete[] weight;
+    delete[] frequency;
     delete[] weight_backup;
     delete[] subscore;
     delete[] toberemoved;
