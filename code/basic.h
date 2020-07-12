@@ -218,4 +218,5 @@ void Framework1CutTree();
 void Framework1Tarjan();
 void Framework2CutTree();
 void Framework2Tarjan();
+void Framework2TarjanCC();  //cc+散点
 bool checkLastRemoved(int node);

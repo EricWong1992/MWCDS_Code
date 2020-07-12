@@ -175,7 +175,12 @@ void addUpdate(int v)
         }
     }
 }
-bool Add(int v, int choice)
+
+///
+//添加顶点
+//@param v 顶点
+//@param choice 0修改cc
+bool Add(int v, int choice = 1)
 {
     if (v_in_c[v] == 1 || v < 0)
         return false; //不会重复加入
@@ -361,8 +366,12 @@ void removeUpdate(int v)
     childnum[v] = 0;
 } //在删除点后对待删除点集进行更新
 
+///
+//删除顶点
 //从C中删除点，相应地将该点从candidate中删除，并改变周围点的支配次数和分数，最后将自身的分数取相反数
-bool Remove(int v, int choice)
+//@param v 顶点
+//@param choice 0修改cc
+bool Remove(int v, int choice = 1)
 {
     isgrey[v] = 1;
     indexingreypoint[v] = greypointnum;
@@ -1034,7 +1043,8 @@ void localSearchFramework1()
 
 void localSearchFramework2()
 {
-    Framework2Tarjan();
+    // Framework2Tarjan();
+    Framework2TarjanCC();
     //    int control = 0;
     //    while (TimeElapsed() < cutoff_time)
     //    {
@@ -1567,6 +1577,129 @@ void Framework2Tarjan()
                 break; //如果没有找到白点周围的，能让权重和不超的灰点，则退出循环
             printDebugAdd(best_add_v, step, step - time_stamp[best_add_v]);
             Add(best_add_v, 1);
+            time_stamp[best_add_v] = step;
+            step++;
+        }
+        //已全部支配，判断当前解是否为更优解
+        if (undom_stack_fill_pointer == 0 && currentWeight < bestWeight)
+        {
+            //TODO::用于加点处的解禁
+            //            rightAfternewlow=true;//刚刚刷新了一次最优解
+            //            minUndom=v_num;//如果现在已经支配了所有点，则要将minUndom重制
+            UpdateBestSolution();
+            neighborSize = 1;
+            improvementCount++;
+            NOimprovementstep = 0;
+        }
+        else
+        {
+            //            rightAfternewlow=false;//通过一轮删除和一轮添加，未能刷新最优解
+            //            if(undom_stack_fill_pointer<minUndom)
+            //                minUndom=undom_stack_fill_pointer;
+            for (size_t i = 0; i < undom_stack_fill_pointer; i++)
+            {
+                addWeight(undom_stack[i]);
+            }
+            totalweight += undom_stack_fill_pointer;
+            if (totalweight > weightthreshold)
+            {
+                updateWeight();
+            }
+            NOimprovementstep++;
+            if (neighborSize > maxNeighborSize)
+            {
+                neighborSize = 1;
+            }
+            else
+            {
+                neighborSize++;
+            }
+        }
+        stepAction++;
+        MarkCut();
+    }
+}
+
+void Framework2TarjanCC()
+{
+    try_step = 1000;
+    int improvementCount = 0;
+    int stepAction = 1;
+    long NOimprovementstep = 0;
+    fill_n(inToberemoved, v_num + 1, 1);
+    fill_n(conf_change, v_num + 1, 1);
+    int neighborSize = 1;
+    MarkCut();
+    while (true)
+    {
+        if (c_size < 5000 && flag == 0)
+        {
+            floor0 *= 10;
+            gap0 = floor0 * ceilingTimes;
+            instance0 = floor0 * insTimes;
+            flag = 1;
+        }
+        if (stepAction % try_step == 0)
+        {
+            int timenow = TimeElapsed();
+            if (timenow > cutoff_time)
+                return;
+            if (stepAction > gap0)
+            { //还在爬坡中
+                if (improvementCount > 10)
+                {
+                    instance0 -= floor0;
+                    if (instance0 < floor0)
+                        instance0 = floor0;
+                }
+                //return;
+            }
+            if (NOimprovementstep > instance0)
+            { //局部搜索中
+                instance0 += floor0;
+                if (instance0 > gap0)
+                    instance0 = gap0;
+                //return;
+            }
+        }
+        if (candidate_size == 1)
+        {
+            return;
+        }
+        //选点删除
+        // removedNodeNeighbor->clear();
+        printDebugMsg("NewTurn");
+        LastRemovedIndex = 0;
+        for (size_t i = 0; i < neighborSize; i++)
+        {
+            int best_removed_v = -1;
+            //选择散点
+            best_removed_v = ChooseRemoveVTopofBMS(100, 0);
+            if (best_removed_v != -1)
+            {
+                Remove(best_removed_v, 0);
+                printDebugRemove(best_removed_v, step, step - time_stamp[best_removed_v]);
+                LastRemoved[LastRemovedIndex++] = best_removed_v;
+                if (candidate_size != 0)
+                {
+                    MarkCut();
+                }
+                time_stamp[best_removed_v] = step;
+                step++;
+            }
+            else
+                cout << "failed to remove" << endl;
+        }
+        //选点添加
+        while (undom_stack_fill_pointer != 0 && currentWeight < bestWeight)
+        {
+            // int best_add_v = ChooseAddVsubscorefast();
+            int best_add_v = ChooseAddVtabufast();
+            // int best_add_v=ChooseAddVtabufastNolastRemove();
+            if (best_add_v == -1)
+                break; //如果没有找到白点周围的，能让权重和不超的灰点，则退出循环
+            printDebugAdd(best_add_v, step, step - time_stamp[best_add_v]);
+            Add(best_add_v, 0);
             time_stamp[best_add_v] = step;
             step++;
         }
