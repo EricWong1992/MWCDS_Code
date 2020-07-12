@@ -32,7 +32,7 @@ int UpdateTargetSize(int choice)
     //        }
     best_remove_v = ChooseRemoveVTopofBMS(100, choice);
 
-    Remove(best_remove_v);
+    Remove(best_remove_v, 1);
     //removeUpdate(best_remove_v);
     //cout<<"update删除"<<best_remove_v<<endl;
     conf_change[best_remove_v] = 1; //这一步删除不要将其设为0
