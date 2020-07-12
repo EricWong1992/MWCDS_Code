@@ -67,12 +67,16 @@ int insTimes = 2;
 //int *edge_weight;
 int maxNeighborSize = 3;       //在一次迭代中最大同时删除顶点数量
 int *frequency;
+
 double *weight_backup;
 double weight_para_aphle = 0.3; //权重调整系数
 int *subscore;                  //带权的分数，可以变支配的点的权重和减去变不支配的点的权重和
 int *toberemoved;
 int *outofcut;
 int outofcutnum;
+int LastRemoved[4];//上一轮最多有4个被删除
+int LastRemovedIndex=0;//上一轮被删除的个数
+bool rightAfternewlow=true;//刚刚刷新了一次新纪录
 Array* removedNodeNeighbor;     //用来暂存删除顶点的邻居
 
 int *score;
@@ -149,7 +153,7 @@ int cutIndex;     //割点集合大小
 //int AddedIndex;   //加入点的数量
 //int RemovedIndex; //删掉的点的数量
 //int ave_weight;
-long para_gama = 3000; //控制权重之和
+long para_gama = 300; //控制权重之和
 //double p_scale;
 int connectedNum = 0; //连通分量的数量
 int minUndom;
@@ -184,8 +188,8 @@ void join(int, int);
 int calCV(int);
 inline void Undom(int);
 inline void Dom(int);
-bool Add(int);
-bool Remove(int);
+bool Add(int, int);
+bool Remove(int, int);
 void ConstructDS();
 void ConstructByDegree();
 void ConstructByScore();
@@ -214,3 +218,4 @@ void Framework1CutTree();
 void Framework1Tarjan();
 void Framework2CutTree();
 void Framework2Tarjan();
+bool checkLastRemoved(int node);
