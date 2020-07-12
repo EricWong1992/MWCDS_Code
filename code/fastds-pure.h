@@ -417,7 +417,7 @@ void minusWeight(int node, int tobeminus)
 
 bool cmp(int a, int b)
 {
-    return (score[a] > score[b]);
+    return (subscore[a]/weight_backup[a] > subscore[b]/weight_backup[b]);
 }
 
 /**
@@ -771,16 +771,29 @@ int ChooseAddVtabufast(int count = 40)
     double cscore; //  subscore/weight，取最大
     double best_score = -weightthreshold;
     int best_add_v = -1;
-    std::vector<int> best_vec;
+    map<int,int> m;
+    int best_outtabu_addv=-1;
+    double best_outtabu_score=-weightthreshold;
+//    std::vector<int> best_vec;
+    const int tobeaddNum1 = (int)(undom_stack_fill_pointer*v_degree[maxDegreeNode]);
+    int tobeadd1[tobeaddNum1];
+    int topIndex = 0;
     for (int i = 0; i < undom_stack_fill_pointer; ++i)
     {
         base_v = undom_stack[i];
         for (int j = 0; j < v_degree[base_v]; ++j)
         {
             add_v = v_adj[base_v][j];
-            if (isgrey[add_v])
+            if (m.find(add_v)==m.end()&& isgrey[add_v]&&weight_backup[add_v]+currentWeight<bestWeight)
+                //仅仅考虑白点周围的，加进来不让总权重超出的灰点,并且不重复考虑点
             {
+                m[topIndex]=add_v;
+                tobeadd1[topIndex++]=add_v;
                 cscore = subscore[add_v] / weight_backup[add_v];
+                if(cscore>best_outtabu_score){
+                    best_add_v=add_v;
+                    best_outtabu_score=cscore;//纪录下最好的符合条件的点(无禁忌)
+                }
                 if (step>=tabuadd[add_v])
                 {
                     if (cscore > best_score)
@@ -797,48 +810,22 @@ int ChooseAddVtabufast(int count = 40)
             }
         }
     }
+    //TODO::解禁的处理
+//    if(undom_stack_fill_pointer-score[best_outtabu_addv]<minUndom&&rightAfternewlow==false)
+//        return best_outtabu_addv;//如果不是刚刚更新过最好权重，并且刷新了最小未支配点数，就解禁
     if (best_add_v != -1)
         return best_add_v; //此处找到未被禁的最大分数的点
     else
     {
-        best_add_v = -1;
-        best_score = -weightthreshold;
-        map<int, int> m;
-        int mindex = 0;
-        for (int i = 0; i < count; i++)
-        {
-            base_v = undom_stack[rand() % undom_stack_fill_pointer];
-            if (m.find(base_v) == m.end())
-                m[mindex++] = base_v;
-            else
-            {
-                continue;
+        if(topIndex==0)
+            return -1;
+        else{
+            sort(tobeadd1, tobeadd1 + topIndex, cmp);
+            int topof = (topIndex * 0.4) + 1;
+            return tobeadd1[rand() % topof];//如果白点周围的，加上后权重不超的灰点存在的话，就随机选前40%
             }
-            for (int j = 0; j < v_degree[base_v]; ++j)
-            {
-                add_v = v_adj[base_v][j];
-                if (isgrey[add_v])
-                {
-                    cscore = subscore[add_v] / weight_backup[add_v];
-                    if (cscore > best_score)
-                    {
-                        best_add_v = add_v;
-                        best_score = cscore;
                     }
-                    else if (cscore == best_score)
-                    {
-                        if ((dominated[add_v] > dominated[best_add_v]) || (dominated[add_v] == dominated[best_add_v] && time_stamp[add_v] < time_stamp[best_add_v]))
-                            best_add_v = add_v;
-                    }
-                }
-            }
-        }//此处用BMS找白点周围的灰点分数最大的
-        if (best_add_v != -1)
-            return best_add_v;
-        else
-            return greypointset[rand() % greypointnum];
-    }
-}//如果能找到CC为1，并且在白点周围的灰点，则选它，否则就用BMS选择一个白点周围的灰点，否则就随机选一个灰点
+}//如果可以找到一个能让如果能找到不被tabu，并且在白点周围，并且加上后权重不超出的灰点，则选它，否则随机从白点周围的，加上后权重不超的灰点集合中选一个前40%的任一个，解禁策略：找到所有的里面cscore最大的，如果这个点加入可以减少最小未支配数就选它
 
 //标记候选解中割点
 void MarkCut()
@@ -1363,14 +1350,14 @@ void Framework2Tarjan()
                     if (instance0 < floor0)
                         instance0 = floor0;
                 }
-                return;
+                //return;
             }
             if (NOimprovementstep > instance0)
             { //局部搜索中
                 instance0 += floor0;
                 if (instance0 > gap0)
                     instance0 = gap0;
-                return;
+                //return;
             }
         }
         if (candidate_size == 1)
@@ -1424,8 +1411,10 @@ void Framework2Tarjan()
                 running_is_interrupted = true;
                 return;
             }
-           int best_add_v = ChooseAddVsubscorefast();
-            // int best_add_v = ChooseAddVtabufast();
+//           int best_add_v = ChooseAddVsubscorefast();
+             int best_add_v = ChooseAddVtabufast();
+            if(best_add_v==-1)
+                break;//如果没有找到白点周围的，能让权重和不超的灰点，则退出循环
             Add(best_add_v);
             time_stamp[best_add_v] = step;
             step++;
@@ -1433,6 +1422,9 @@ void Framework2Tarjan()
         //已全部支配，判断当前解是否为更优解
         if (undom_stack_fill_pointer == 0 && currentWeight < bestWeight)
         {
+            //TODO::用于加点处的解禁
+//            rightAfternewlow=true;//刚刚刷新了一次最优解
+//            minUndom=v_num;//如果现在已经支配了所有点，则要将minUndom重制
             UpdateBestSolution();
             neighborSize = 1;
             improvementCount++;
@@ -1440,6 +1432,9 @@ void Framework2Tarjan()
         }
         else
         {
+//            rightAfternewlow=false;//通过一轮删除和一轮添加，未能刷新最优解
+//            if(undom_stack_fill_pointer<minUndom)
+//                minUndom=undom_stack_fill_pointer;
             //TODO:增加权重平滑机制
             for (size_t i = 0; i < undom_stack_fill_pointer; i++)
             {
