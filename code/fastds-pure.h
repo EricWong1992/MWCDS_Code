@@ -666,6 +666,8 @@ int ChooseAddVsubscorefast(int count = 40)
             add_v = v_adj[base_v][j];
             if (isgrey[add_v])
             {
+                if (weight_backup[add_v] + currentWeight > bestWeight)
+                    continue;
                 cscore = subscore[add_v] / weight_backup[add_v];
                 if (conf_change[add_v] == 1)
                 {
@@ -705,6 +707,8 @@ int ChooseAddVsubscorefast(int count = 40)
                 add_v = v_adj[base_v][j];
                 if (isgrey[add_v])
                 {
+                    if (weight_backup[add_v] + currentWeight > bestWeight)
+                        continue;
                     cscore = subscore[add_v] / weight_backup[add_v];
                     if (cscore > best_score)
                     {
@@ -1582,7 +1586,6 @@ void Framework2Tarjan()
             //            rightAfternewlow=false;//通过一轮删除和一轮添加，未能刷新最优解
             //            if(undom_stack_fill_pointer<minUndom)
             //                minUndom=undom_stack_fill_pointer;
-            //TODO:增加权重平滑机制
             for (size_t i = 0; i < undom_stack_fill_pointer; i++)
             {
                 addWeight(undom_stack[i]);
