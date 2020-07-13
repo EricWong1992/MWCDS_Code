@@ -19,12 +19,13 @@ long ind = 0;
 
 void freeMemory()
 {
-    for (int i = 0; i < v + 1; ++i) {
-        delete [] adj[i];
+    for (int i = 0; i < v + 1; ++i)
+    {
+        delete[] adj[i];
     }
-    delete [] adj;
-    delete [] visit;
-    delete [] degree;
+    delete[] adj;
+    delete[] visit;
+    delete[] degree;
 }
 
 void bfs(long root)
@@ -64,21 +65,22 @@ int main(int argc, char *argv[])
 
     visit = new long[v + 1];
     degree = new long[v + 1];
-    adj = new long*[v + 1];
-    for (int i = 0; i < v + 1; ++i) {
+    adj = new long *[v + 1];
+    for (int i = 0; i < v + 1; ++i)
+    {
         adj[i] = new long[v + 1];
     }
-    memset(degree, 0, sizeof(long) * (v+1));
+    memset(degree, 0, sizeof(long) * (v + 1));
     memset(visit, 0, sizeof(long) * (v + 1));
 
     string w;
-    weight.emplace_back("");    //index0为空字符串，为了跟顶点同步索引
+    weight.emplace_back(""); //index0为空字符串，为了跟顶点同步索引
     for (size_t i = 0; i < v; i++)
     {
         cin >> tmp1 >> tmp2 >> w;
         weight.emplace_back(w);
     }
-    
+
     for (long i = 0; i < e; i++)
     {
         cin >> tmp1 >> a >> b;
@@ -87,7 +89,8 @@ int main(int argc, char *argv[])
     }
     fclose(stdin);
     // find max cnt
-    for (int i = 1; i < v + 1; ++i) {
+    for (int i = 1; i < v + 1; ++i)
+    {
         if (degree[i] > 0 && visit[i] == 0)
         {
             bfs(i);
@@ -97,12 +100,12 @@ int main(int argc, char *argv[])
             }
         }
     }
-    for(long i : bigCnt)
+    for (long i : bigCnt)
     {
         edge += degree[i];
     }
     edge /= 2;
-    cout << filename << " find maxCnt, v: " << bigCnt.size() << " e: " << edge;
+    cout << filename << " find maxCnt, v: " << bigCnt.size() << " e: " << edge << endl;
     freopen(argv[2], "w", stdout);
     cout << "p edge " << bigCnt.size() << ' ' << edge << endl;
     for (long i : bigCnt)
