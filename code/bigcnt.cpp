@@ -1,22 +1,32 @@
 #include <iostream>
-#include <stdio.h>
+#include <cstdio>
 #include <stack>
-#include <string.h>
+#include <cstring>
 #include <queue>
-#include <fstream>
 #include <vector>
-#include <map>
+#include <string>
 using namespace std;
-#define MAXN 53000000
-vector<long> *adj;
-//long adj[MAXN][1000];
-//long visit[MAXN];
+
+long **adj;
 long *visit;
 long *degree;
 vector<long> nowCnt;
 vector<long> bigCnt;
+vector<string> weight;
 long v, e;
+long edge = 0;
 long ind = 0;
+
+void freeMemory()
+{
+    for (int i = 0; i < v + 1; ++i) {
+        delete [] adj[i];
+    }
+    delete [] adj;
+    delete [] visit;
+    delete [] degree;
+}
+
 void bfs(long root)
 {
     nowCnt = {};
@@ -43,67 +53,74 @@ void bfs(long root)
         }
     }
 }
-long find()
-{
-    long i = 1;
-    for (; i <= v; i++)
-    {
-        if (visit[i] == 0)
-            break;
-    }
-    return i;
-}
+
 int main(int argc, char *argv[])
 {
-    visit = new long[10 * MAXN];
-    degree = new long[10 * MAXN];
-    adj = new vector<long>[10 * MAXN];
-    //string filename="/Users/douglaslee/Desktop/CDScase/snap/Cit-HepTh.txt";
     string filename = argv[1];
-    //ifstream infile(filename);
     freopen(argv[1], "r", stdin);
     long a, b;
     string tmp1, tmp2;
-    memset(degree, 0, sizeof(degree));
-    memset(visit, 0, sizeof(visit));
     cin >> tmp1 >> tmp2 >> v >> e;
+
+    visit = new long[v + 1];
+    degree = new long[v + 1];
+    adj = new long*[v + 1];
+    for (int i = 0; i < v + 1; ++i) {
+        adj[i] = new long[v + 1];
+    }
+    memset(degree, 0, sizeof(long) * (v+1));
+    memset(visit, 0, sizeof(long) * (v + 1));
+
+    string w;
+    weight.emplace_back("");    //index0为空字符串，为了跟顶点同步索引
+    for (size_t i = 0; i < v; i++)
+    {
+        cin >> tmp1 >> tmp2 >> w;
+        weight.emplace_back(w);
+    }
+    
     for (long i = 0; i < e; i++)
     {
         cin >> tmp1 >> a >> b;
-        degree[a]++;
-        degree[b]++;
-        adj[a].push_back(b);
-        adj[b].push_back(a);
+        adj[a][degree[a]++] = b;
+        adj[b][degree[b]++] = a;
     }
     fclose(stdin);
-    //infile.close();
-    //while(bigCnt.size()<(v-ind)){
-    bfs(find());
-    if (nowCnt.size() > bigCnt.size())
-    {
-        bigCnt = nowCnt;
+    // find max cnt
+    for (int i = 1; i < v + 1; ++i) {
+        if (degree[i] > 0 && visit[i] == 0)
+        {
+            bfs(i);
+            if (nowCnt.size() > bigCnt.size())
+            {
+                bigCnt.assign(nowCnt.begin(), nowCnt.end());
+            }
+        }
     }
-    //}
-    cout << bigCnt.size();
-    long edge = 0;
-    map<long, long> m;
-    for (long i = 0; i < bigCnt.size(); i++)
+    for(long i : bigCnt)
     {
-        m[bigCnt[i]] = i + 1;
-        for (int j = 0; j < degree[bigCnt[i]]; j++)
-            if (adj[bigCnt[i]][j] > bigCnt[i])
-                edge++;
+        edge += degree[i];
     }
+    edge /= 2;
+    printf("%s find maxCnt,  v: %d e: %ld", filename.c_str(), bigCnt.size(), edge);
     freopen(argv[2], "w", stdout);
-    // ofstream outfile(filename+".txt");
     cout << "p edge " << bigCnt.size() << ' ' << edge << endl;
-    for (long i = 0; i < bigCnt.size(); i++)
+    for (long i : bigCnt)
     {
-        for (int j = 0; j < degree[bigCnt[i]]; j++)
-            if (adj[bigCnt[i]][j] > bigCnt[i])
-                cout << "p " << m[bigCnt[i]] << ' ' << m[adj[bigCnt[i]][j]] << endl;
+        cout << "v " << i << weight[i] << endl;
+    }
+    for (long v1 : bigCnt)
+    {
+        for (int j = 0; j < degree[v1]; j++)
+        {
+            long v2 = adj[v1][j];
+            if (v1 < v2)
+            {
+                cout << "e " << v1 << " " << v2 << endl;
+            }
+        }
     }
     fclose(stdout);
-    delete[] visit;
-    delete[] degree;
+    freeMemory();
+    return 0;
 }
