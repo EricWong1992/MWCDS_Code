@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
         edge += degree[i];
     }
     edge /= 2;
-    printf("%s find maxCnt,  v: %d e: %ld", filename.c_str(), bigCnt.size(), edge);
+    cout << filename << " find maxCnt, v: " << bigCnt.size() << " e: " << edge;
     freopen(argv[2], "w", stdout);
     cout << "p edge " << bigCnt.size() << ' ' << edge << endl;
     for (long i : bigCnt)
