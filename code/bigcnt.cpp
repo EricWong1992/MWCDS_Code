@@ -5,6 +5,7 @@
 #include <queue>
 #include <vector>
 #include <string>
+#include <map>
 using namespace std;
 
 long **adj;
@@ -100,29 +101,35 @@ int main(int argc, char *argv[])
             }
         }
     }
-    for (long i : bigCnt)
+    edge = 0;
+    map<long, long> m;
+    for (size_t i = 0; i < bigCnt.size(); i++)
     {
-        edge += degree[i];
+        m[bigCnt[i]] = i + 1;
+        for (size_t j = 0; j < degree[bigCnt[i]]; j++)
+        {
+            if (adj[bigCnt[i]][j] > bigCnt[i])
+            {
+                edge++;
+            }
+        }
     }
-    edge /= 2;
+
     cout << filename << " find maxCnt, v: " << bigCnt.size() << " e: " << edge << endl;
     freopen(argv[2], "w", stdout);
     cout << "p edge " << bigCnt.size() << ' ' << edge << endl;
     for (long i : bigCnt)
     {
-        cout << "v " << i << weight[i] << endl;
+        cout << "v " << i << " " << weight[i] << endl;
     }
-    for (long v1 : bigCnt)
+
+    for (long &i : bigCnt)
     {
-        for (int j = 0; j < degree[v1]; j++)
-        {
-            long v2 = adj[v1][j];
-            if (v1 < v2)
-            {
-                cout << "e " << v1 << " " << v2 << endl;
-            }
-        }
+        for (int j = 0; j < degree[i]; j++)
+            if (adj[i][j] > i)
+                cout << "e " << m[i] << ' ' << m[adj[i][j]] << endl;
     }
+
     fclose(stdout);
     freeMemory();
     return 0;
