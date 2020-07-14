@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
     cout << "p edge " << bigCnt.size() << ' ' << edge << endl;
     for (long i : bigCnt)
     {
-        cout << "v " << m[i] << " " << weight[i] << endl;
+        cout << "v " << m[i] << " " << weight[m[i]] << endl;
     }
 
     for (long &i : bigCnt)
