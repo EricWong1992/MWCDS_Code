@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <algorithm>
 using namespace std;
 
 long **adj;
@@ -103,9 +104,12 @@ int main(int argc, char *argv[])
     }
     edge = 0;
     map<long, long> m;
+    sort(bigCnt.begin(), bigCnt.end());
     for (size_t i = 0; i < bigCnt.size(); i++)
     {
-        m[bigCnt[i]] = i + 1;
+        long key = bigCnt[i];
+        long value = i + 1;
+        m.insert(std::pair<long, long>(key, value));
         for (size_t j = 0; j < degree[bigCnt[i]]; j++)
         {
             if (adj[bigCnt[i]][j] > bigCnt[i])
@@ -120,7 +124,7 @@ int main(int argc, char *argv[])
     cout << "p edge " << bigCnt.size() << ' ' << edge << endl;
     for (long i : bigCnt)
     {
-        cout << "v " << m[i] << " " << weight[m[i]] << endl;
+        cout << "v " << m[i] << " " << weight[i] << endl;
     }
 
     for (long &i : bigCnt)
