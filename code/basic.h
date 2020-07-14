@@ -19,7 +19,6 @@ using namespace std;
 
 //#define NDEBUG
 
-
 typedef long long llong;
 typedef unsigned int uint;
 
@@ -66,7 +65,7 @@ int insTimes = 2;
 
 //Edge *edge;
 //int *edge_weight;
-int maxNeighborSize = 3;       //在一次迭代中最大同时删除顶点数量
+int maxNeighborSize = 3; //在一次迭代中最大同时删除顶点数量
 int *frequency;
 
 double *weight_backup;
@@ -75,10 +74,10 @@ int *subscore;                  //带权的分数，可以变支配的点的权�
 int *toberemoved;
 int *outofcut;
 int outofcutnum;
-int LastRemoved[4];//上一轮最多有4个被删除
-int LastRemovedIndex=0;//上一轮被删除的个数
-bool rightAfternewlow=true;//刚刚刷新了一次新纪录
-Array* removedNodeNeighbor;     //用来暂存删除顶点的邻居
+int LastRemoved[4];           //上一轮最多有4个被删除
+int LastRemovedIndex = 0;     //上一轮被删除的个数
+bool rightAfternewlow = true; //刚刚刷新了一次新纪录
+Array *removedNodeNeighbor;   //用来暂存删除顶点的邻居
 
 int *score;
 int *initscore; //初始化阶段的分数，即2Wv+Cv-1
@@ -104,7 +103,7 @@ int *SF;            //指向顶点的第一条未搜索边，大小为v_num+1
 int *child;         //存储顶点的儿子数量，大小为v_num+1
 long *onlydominate; //onlydominate[a]=b表示a只被b支配
 
-int *dominated;  //论文中的dd:dominated degree
+int *dominated; //论文中的dd:dominated degree
 int *greypointset;
 int *indexingreypoint;
 int *isgrey;
@@ -150,7 +149,7 @@ int *AddedPoint;   //加入的点的集合
 int *cutPointSet;  //割点集合
 int *initIndex;    //初始化时的序号
 
-int cutIndex;     //割点集合大小
+int cutIndex; //割点集合大小
 //int AddedIndex;   //加入点的数量
 //int RemovedIndex; //删掉的点的数量
 //int ave_weight;
@@ -170,9 +169,9 @@ llong averagedegree = 0;
 //int Cmax; //无提升的最大周期
 //double Temperature;
 double totalweight;
-double weightthreshold; //权重阈值
+double weightthreshold;   //权重阈值
 double currentWeight = 0; //当前解权重和
-double bestWeight;  //当前最优解权重和
+double bestWeight;        //当前最优解权重和
 //llong check_size = 0;
 
 int *father;
@@ -218,6 +217,6 @@ void localSearchFramework2();
 void Framework1CutTree();
 void Framework1Tarjan();
 void Framework2CutTree();
-void Framework2TarjanFocus();//集中
-void Framework2TarjanScatter();  //散点
+void Framework2TarjanFocus();   //集中
+void Framework2TarjanScatter(); //散点
 bool checkLastRemoved(int node);
