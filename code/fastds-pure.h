@@ -49,32 +49,50 @@ inline void Dom(int v)
     index_in_undom_stack[last_undom_vertex] = index;
 } //将v从undomstack中移除
 
+//更新冗余结点
+void updateRedundantV(int v)
+{
+    if (v_in_c[v] == 1)
+    {
+        if (score[v] == 0)
+        {
+            redundantNodes->insert_element(v);
+        }
+        else
+        {
+            redundantNodes->delete_element(v);
+        }
+    }
+}
+
 void increase_dominate(long v, long source_v)
 {
     if (dominated[v] == 0)
     { //该点被支配了，因此分数要降低
         --score[v];
         subscore[v] -= frequency[v];
+        updateRedundantV(v);
         // all make but one break
         for (int i = 0; i < v_degree[v]; ++i)
         {
             long u = v_adj[v][i];
             --score[u];
             subscore[u] -= frequency[v];
+            updateRedundantV(v);
         }
         Dom(v);
         onlydominate[v] = source_v; //libohan_10_6
         isgrey[v] = 1;
         indexingreypoint[v] = greypointnum;
         greypointset[greypointnum++] = v; //新被支配的白点变成灰点
-
-    } //一个原本不被支配的点变得被支配了，该点以及周围的点都要分数-1
+    }                                     //一个原本不被支配的点变得被支配了，该点以及周围的点都要分数-1
     else if (dominated[v] == 1)
     {
         if (v_in_c[v] == 1)
         {
             ++score[v];
             subscore[v] += frequency[v];
+            updateRedundantV(v);
         } //本来该点如果被删除的话则该点就不被支配，但是，现在不会了，因为被其他点先支配了
         else
         {
@@ -90,6 +108,7 @@ void increase_dominate(long v, long source_v)
             long u = onlydominate[v];
             ++score[u];
             subscore[u] += frequency[v];
+            updateRedundantV(u);
         } //如果该点a原先只被b支配了，但前被另外的点支配了，那么原来b删除后，a就不被支配，但是现在不会不被支配，所以分数+1
     }
     ++dominated[v];
@@ -202,6 +221,7 @@ bool Add(int v, int choice = 1)
     }
     score[v] = new_score;
     subscore[v] = new_subscore;
+    updateRedundantV(v);
     v_in_c[v] = 1;
     currentWeight += weight_backup[v];
     c_size++;
@@ -248,11 +268,13 @@ void decrease_dominate(int v)
         // all score of neighbours are make
         ++score[v];
         subscore[v] += frequency[v];
+        updateRedundantV(v);
         for (int i = 0; i < v_degree[v]; ++i)
         {
             int u = v_adj[v][i];
             ++score[u];
             subscore[u] += frequency[v];
+            updateRedundantV(u);
         }
         Undom(v);
         isgrey[v] = 0;
@@ -268,6 +290,7 @@ void decrease_dominate(int v)
         {
             --score[v];
             subscore[v] -= frequency[v];
+            updateRedundantV(v);
         } //如果在C中并且被支配了两次，则这两次一次被自己支配，一次被删掉的点支配，则分数为删掉自己后的分数，会多减少1，因为删除自己后，自己被无支配了
         else
         {
@@ -279,6 +302,7 @@ void decrease_dominate(int v)
                 {
                     --score[u]; //如果该点d被两个点支配了，那么一个是被删的点，另一个是另一个在C中的点p，删除p后，d会不被支配
                     subscore[u] -= frequency[v];
+                    updateRedundantV(u);
                     onlydominate[v] = u;
                     break;
                 }
@@ -398,6 +422,7 @@ bool Remove(int v, int choice = 1)
     }                     //对v及其周围邻居u进行decreaseDominate
     score[v] = new_score; //？？一个在C中的点的分数为负数，如果将其删除后其分数为正数，且正好是相反数
     subscore[v] = new_subscore;
+    updateRedundantV(v);
     //pre[v]=v;//删除了一个非割点之后TODO:如果删除的点是标号最小的点情况
     if (choice == 0)
     {
@@ -1017,20 +1042,21 @@ void localSearchFramework1()
 void localSearchFramework2()
 {
     //     Framework2Tarjan();
-    //    Framework2TarjanFocus();
-    int control = 0;
-    while (TimeElapsed() < cutoff_time)
-    {
-        if (control % 2 == 0)
-        {
-            Framework2TarjanScatter();
-        }
-        else
-        {
-            Framework2TarjanFocus();
-        }
-        control++;
-    }
+    Framework2TarjanFocus();
+    //    Framework2TarjanScatter();
+    //    int control = 0;
+    //    while (TimeElapsed() < cutoff_time)
+    //    {
+    //        if (control % 2 == 0)
+    //        {
+    //            Framework2TarjanScatter();
+    //        }
+    //        else
+    //        {
+    //            Framework2TarjanFocus();
+    //        }
+    //        control++;
+    //    }
 }
 
 int instance1 = floor1 * insTimes;
@@ -1555,6 +1581,14 @@ void Framework2TarjanFocus()
                 break; //如果没有找到白点周围的，能让权重和不超的灰点，则退出循环
             printDebugAdd(best_add_v, step, step - time_stamp[best_add_v]);
             Add(best_add_v, 1);
+            //删除冗余
+            for (int i = 0; i < redundantNodes->size(); ++i)
+            {
+                int redundantV = redundantNodes->element_at(i);
+                Remove(redundantV, 0);
+                MarkCut();
+            }
+            redundantNodes->clear();
             time_stamp[best_add_v] = step;
             //            step++;
         }
@@ -1683,6 +1717,14 @@ void Framework2TarjanScatter()
                 break; //如果没有找到白点周围的，能让权重和不超的灰点，则退出循环
             printDebugAdd(best_add_v, step, step - time_stamp[best_add_v]);
             Add(best_add_v, 0); //CC的Add
+            //删除冗余
+            for (int i = 0; i < redundantNodes->size(); ++i)
+            {
+                int redundantV = redundantNodes->element_at(i);
+                Remove(redundantV, 0);
+                MarkCut();
+            }
+            redundantNodes->clear();
             time_stamp[best_add_v] = step;
             //            step++;
         }

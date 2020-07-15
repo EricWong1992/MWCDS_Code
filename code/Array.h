@@ -57,6 +57,7 @@ public:
 
     void insert_element(int e)
     {
+        if (is_in_array(e)) return;
         if (array_size < array_capacity - 1)
         {
             array[array_size] = e;

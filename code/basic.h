@@ -24,14 +24,14 @@ typedef unsigned int uint;
 
 struct Edge
 {
-  int v1;
-  int v2;
+    int v1;
+    int v2;
 };
 typedef struct Edge2
-{           //边集数组
-  int u, v; //弧尾和弧头
-  int next; //指向同一个弧尾的下一条边
-            //    EdgeType weight; //权值，对于非网图能够不须要
+{             //边集数组
+    int u, v; //弧尾和弧头
+    int next; //指向同一个弧尾的下一条边
+              //    EdgeType weight; //权值，对于非网图能够不须要
 } EdgeLib;
 
 int *first; //指向顶点的第一条边
@@ -78,6 +78,7 @@ int LastRemoved[4];           //上一轮最多有4个被删除
 int LastRemovedIndex = 0;     //上一轮被删除的个数
 bool rightAfternewlow = true; //刚刚刷新了一次新纪录
 Array *removedNodeNeighbor;   //用来暂存删除顶点的邻居
+Array *redundantNodes;        //用来记录score为0的冗余结点
 
 int *score;
 int *initscore; //初始化阶段的分数，即2Wv+Cv-1
@@ -220,3 +221,4 @@ void Framework2CutTree();
 void Framework2TarjanFocus();   //集中
 void Framework2TarjanScatter(); //散点
 bool checkLastRemoved(int node);
+void updateRedundantV(int);

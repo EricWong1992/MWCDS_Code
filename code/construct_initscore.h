@@ -87,6 +87,7 @@ void lowerScore()
             if (dominated[v] == 1)
             {
                 --score[v];
+                updateRedundantV(v);
                 // --subscore[v];
             }
             for (int n = 0; n < v_degree[v]; ++n)
@@ -94,6 +95,7 @@ void lowerScore()
                 if (dominated[v_adj[v][n]] == 1)
                 {
                     --score[v];
+                    updateRedundantV(v);
                     // --subscore[v];
                 }
             }
@@ -101,13 +103,12 @@ void lowerScore()
     } // 删去点C中的v后的分数改变量，因为对于一个支配集加入点没有帮助
 }
 
-
 //根据定义初始化subscore
 void initSubScore()
 {
     for (int v = 1; v < v_num + 1; v++)
     {
-        int tempSubScore = 0;       //TODO：本来应该定义为double，但是在一个例子中int效果更好
+        int tempSubScore = 0; //TODO：本来应该定义为double，但是在一个例子中int效果更好
         //v在D中，subscore为负
         if (v_in_c[v])
         {
@@ -140,7 +141,6 @@ void initSubScore()
         subscore[v] = tempSubScore;
     }
 }
-
 
 /**
  加入某个点后将点周围的连通分量连接起来
@@ -298,13 +298,15 @@ void ConstructByInitScore()
     UpdateBestSolution();
 
     //初始化所有candidate用于寻找割点
-    for (int i = 1; i <= v_num; ++i) {
+    for (int i = 1; i <= v_num; ++i)
+    {
         candidate[candidate_size++] = i;
     }
 
     //使用割点fix
     MarkCut();
-    for (int i = 0; i < cutIndex; ++i) {
+    for (int i = 0; i < cutIndex; ++i)
+    {
         if (isCut[cutPointSet[i]] != 0)
         {
             int cutPoint = cutPointSet[i];
