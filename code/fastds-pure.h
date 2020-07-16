@@ -3,7 +3,7 @@
 #include "checker.h"
 
 #define NDEBUG
-#define N_DEBUG_OUTPUT      //输出添加删除节点信息
+#define N_DEBUG_OUTPUT //输出添加删除节点信息
 
 //模块开关
 bool moduleRemoveRedundant = true; //删除冗余结点
@@ -57,16 +57,9 @@ void updateRedundantV(int v)
 {
     if (!moduleRemoveRedundant)
         return;
-    if (v_in_c[v] == 1)
+    if (v_in_c[v] == 1 && score[v] == 0 && v_fixed[v] == 0) //只有未被固定的，在cs中的，分数为0的点才有可能会被删除
     {
-        if (score[v] == 0)
-        {
-            redundantNodes->insert_element(v);
-        }
-        else
-        {
-            redundantNodes->delete_element(v);
-        }
+        redundantNodes->insert_element(v);
     }
     else
     {
@@ -75,19 +68,20 @@ void updateRedundantV(int v)
 }
 
 //删除冗余
-void RemoveRedundant()
+void RemoveRedundant(int choice)
 {
     if (!moduleRemoveRedundant)
         return;
-    while (redundantNodes->size() > 0)
+    MarkCut();
+    for (int k = 0; k < redundantNodes->size(); k++)
     {
-        MarkCut();
-        int redundantV = redundantNodes->element_at(0);
-        if (v_in_c[redundantV] == 1 && score[redundantV] == 0 && !isCut[redundantV] && v_fixed[redundantV] == 0)
+        int redundantV = redundantNodes->element_at(k);
+        if (isCut[redundantV] == 0 && v_in_c[redundantV] == 1 && v_fixed[redundantV] == 0)
         {
-            Remove(redundantV, 0);
+            Remove(redundantV, choice);
+            MarkCut(); //只在删除了点之后才重新算割点
+            k = 0;
         }
-        redundantNodes->delete_element(redundantV);
     }
 }
 
@@ -1068,21 +1062,21 @@ void localSearchFramework1()
 void localSearchFramework2()
 {
     //     Framework2Tarjan();
-//    Framework2TarjanFocus();
+    //    Framework2TarjanFocus();
     //    Framework2TarjanScatter();
-        int control = 0;
-        while (TimeElapsed() < cutoff_time)
+    int control = 0;
+    while (TimeElapsed() < cutoff_time)
+    {
+        if (control % 2 == 0)
         {
-            if (control % 2 == 0)
-            {
-                Framework2TarjanScatter();
-            }
-            else
-            {
-                Framework2TarjanFocus();
-            }
-            control++;
+            Framework2TarjanScatter();
         }
+        else
+        {
+            Framework2TarjanFocus();
+        }
+        control++;
+    }
 }
 
 int instance1 = floor1 * insTimes;
@@ -1568,7 +1562,7 @@ void Framework2TarjanFocus()
                 Remove(best_removed_v, 1);
                 printDebugRemove(best_removed_v, step, step - time_stamp[best_removed_v]);
                 LastRemoved[LastRemovedIndex++] = best_removed_v;
-                if (candidate_size != 0)
+                if (candidate_size != 0 && i < neighborSize - 1) //最后一次删点不用标割点
                 {
                     MarkCut();
                 }
@@ -1606,7 +1600,7 @@ void Framework2TarjanFocus()
                 break; //如果没有找到白点周围的，能让权重和不超的灰点，则退出循环
             printDebugAdd(best_add_v, step, step - time_stamp[best_add_v]);
             Add(best_add_v, 1);
-            RemoveRedundant();
+            RemoveRedundant(1);
             time_stamp[best_add_v] = step;
             //            step++;
         }
@@ -1712,7 +1706,7 @@ void Framework2TarjanScatter()
                 Remove(best_removed_v, 0);
                 printDebugRemove(best_removed_v, step, step - time_stamp[best_removed_v]);
                 LastRemoved[LastRemovedIndex++] = best_removed_v;
-                if (candidate_size != 0)
+                if (candidate_size != 0 && i < neighborSize - 1) //最后一次删点不用标割点
                 {
                     MarkCut();
                 }
@@ -1733,7 +1727,7 @@ void Framework2TarjanScatter()
                 break; //如果没有找到白点周围的，能让权重和不超的灰点，则退出循环
             printDebugAdd(best_add_v, step, step - time_stamp[best_add_v]);
             Add(best_add_v, 0); //CC的Add
-            RemoveRedundant();
+            RemoveRedundant(0);
             time_stamp[best_add_v] = step;
             //            step++;
         }
