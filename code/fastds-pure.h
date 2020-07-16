@@ -3,7 +3,10 @@
 #include "checker.h"
 
 #define NDEBUG
-#define N_DEBUG_OUTPUT
+#define N_DEBUG_OUTPUT      //输出添加删除节点信息
+
+//模块开关
+bool moduleRemoveRedundant = true; //删除冗余结点
 
 void printDebugMsg(string msg)
 {
@@ -52,6 +55,8 @@ inline void Dom(int v)
 //更新冗余结点
 void updateRedundantV(int v)
 {
+    if (!moduleRemoveRedundant)
+        return;
     if (v_in_c[v] == 1)
     {
         if (score[v] == 0)
@@ -62,6 +67,27 @@ void updateRedundantV(int v)
         {
             redundantNodes->delete_element(v);
         }
+    }
+    else
+    {
+        redundantNodes->delete_element(v);
+    }
+}
+
+//删除冗余
+void RemoveRedundant()
+{
+    if (!moduleRemoveRedundant)
+        return;
+    while (redundantNodes->size() > 0)
+    {
+        MarkCut();
+        int redundantV = redundantNodes->element_at(0);
+        if (v_in_c[redundantV] == 1 && score[redundantV] == 0 && !isCut[redundantV] && v_fixed[redundantV] == 0)
+        {
+            Remove(redundantV, 0);
+        }
+        redundantNodes->delete_element(redundantV);
     }
 }
 
@@ -221,8 +247,8 @@ bool Add(int v, int choice = 1)
     }
     score[v] = new_score;
     subscore[v] = new_subscore;
-    updateRedundantV(v);
     v_in_c[v] = 1;
+    updateRedundantV(v);
     currentWeight += weight_backup[v];
     c_size++;
     candidate[candidate_size] = v; //新加入的点总是最后加入
@@ -1042,21 +1068,21 @@ void localSearchFramework1()
 void localSearchFramework2()
 {
     //     Framework2Tarjan();
-    Framework2TarjanFocus();
+//    Framework2TarjanFocus();
     //    Framework2TarjanScatter();
-    //    int control = 0;
-    //    while (TimeElapsed() < cutoff_time)
-    //    {
-    //        if (control % 2 == 0)
-    //        {
-    //            Framework2TarjanScatter();
-    //        }
-    //        else
-    //        {
-    //            Framework2TarjanFocus();
-    //        }
-    //        control++;
-    //    }
+        int control = 0;
+        while (TimeElapsed() < cutoff_time)
+        {
+            if (control % 2 == 0)
+            {
+                Framework2TarjanScatter();
+            }
+            else
+            {
+                Framework2TarjanFocus();
+            }
+            control++;
+        }
 }
 
 int instance1 = floor1 * insTimes;
@@ -1542,7 +1568,6 @@ void Framework2TarjanFocus()
                 Remove(best_removed_v, 1);
                 printDebugRemove(best_removed_v, step, step - time_stamp[best_removed_v]);
                 LastRemoved[LastRemovedIndex++] = best_removed_v;
-                //                removedNodeNeighbor->delete_element(best_removed_v);
                 if (candidate_size != 0)
                 {
                     MarkCut();
@@ -1581,14 +1606,7 @@ void Framework2TarjanFocus()
                 break; //如果没有找到白点周围的，能让权重和不超的灰点，则退出循环
             printDebugAdd(best_add_v, step, step - time_stamp[best_add_v]);
             Add(best_add_v, 1);
-            //删除冗余
-            for (int i = 0; i < redundantNodes->size(); ++i)
-            {
-                int redundantV = redundantNodes->element_at(i);
-                Remove(redundantV, 0);
-                MarkCut();
-            }
-            redundantNodes->clear();
+            RemoveRedundant();
             time_stamp[best_add_v] = step;
             //            step++;
         }
@@ -1607,7 +1625,6 @@ void Framework2TarjanFocus()
         {
             rightAfternewlow = false; //通过一轮删除和一轮添加，未能刷新最优解
             if ((undom_stack_fill_pointer < minUndom) || (NOimprovementstep % 1000 == 0 && NOimprovementstep > 0))
-                //            if(undom_stack_fill_pointer<minUndom)
                 //如果提升了最优情况，或者已经一千步没有提升了，则更新minUndom
                 minUndom = undom_stack_fill_pointer;
             for (size_t i = 0; i < undom_stack_fill_pointer; i++)
@@ -1683,7 +1700,6 @@ void Framework2TarjanScatter()
             return;
         }
         //选点删除
-        // removedNodeNeighbor->clear();
         printDebugMsg("NewTurn");
         LastRemovedIndex = 0;
         for (size_t i = 0; i < neighborSize; i++)
@@ -1717,14 +1733,7 @@ void Framework2TarjanScatter()
                 break; //如果没有找到白点周围的，能让权重和不超的灰点，则退出循环
             printDebugAdd(best_add_v, step, step - time_stamp[best_add_v]);
             Add(best_add_v, 0); //CC的Add
-            //删除冗余
-            for (int i = 0; i < redundantNodes->size(); ++i)
-            {
-                int redundantV = redundantNodes->element_at(i);
-                Remove(redundantV, 0);
-                MarkCut();
-            }
-            redundantNodes->clear();
+            RemoveRedundant();
             time_stamp[best_add_v] = step;
             //            step++;
         }
@@ -1742,7 +1751,6 @@ void Framework2TarjanScatter()
         else
         {
             rightAfternewlow = false; //通过一轮删除和一轮添加，未能刷新最优解
-                                      //            if(undom_stack_fill_pointer<minUndom)
             if ((undom_stack_fill_pointer < minUndom) || (NOimprovementstep % 1000 == 0 && NOimprovementstep > 0))
                 minUndom = undom_stack_fill_pointer;
             for (size_t i = 0; i < undom_stack_fill_pointer; i++)

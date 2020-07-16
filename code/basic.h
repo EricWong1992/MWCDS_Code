@@ -222,3 +222,4 @@ void Framework2TarjanFocus();   //集中
 void Framework2TarjanScatter(); //散点
 bool checkLastRemoved(int node);
 void updateRedundantV(int);
+void RemoveRedundant();
