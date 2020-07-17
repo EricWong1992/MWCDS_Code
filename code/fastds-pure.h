@@ -75,12 +75,25 @@ void RemoveRedundant(int choice)
     MarkCut();
     for (int k = 0; k < redundantNodes->size(); k++)
     {
-        int redundantV = redundantNodes->element_at(k);
-        if (isCut[redundantV] == 0 && v_in_c[redundantV] == 1 && v_fixed[redundantV] == 0)
+        int bestRemoveV = -1;
+        double bestRemoveVWeight = 0.0;
+        for (size_t i = 0; i < redundantNodes->size(); i++)
         {
-            Remove(redundantV, choice);
-            MarkCut(); //只在删除了点之后才重新算割点
+            int redundantV = redundantNodes->element_at(k);
+            if (weight_backup[redundantV] > bestRemoveVWeight && isCut[redundantV] == 0 && v_in_c[redundantV] == 1 && v_fixed[redundantV] == 0)
+            {
+                bestRemoveV = redundantV;
+                bestRemoveVWeight = weight_backup[redundantV];
+            }
+        }
+        if (bestRemoveV != -1)
+        {
+            Remove(bestRemoveV, choice);
+            MarkCut();
             k = 0;
+        } else
+        {
+            break;
         }
     }
 }
