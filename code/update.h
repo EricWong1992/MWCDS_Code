@@ -91,18 +91,19 @@ void UpdateBestSolution()
     //    int v;
     if (currentWeight < bestWeight)
     {
+        // cout << currentWeight << endl;
         best_c_size = c_size;
         best_comp_time = TimeElapsed();
         best_step = step;
         bestWeight = currentWeight;
-        memcpy(best_v_in_c, v_in_c, sizeof(int)*(v_num + 1));
+        memcpy(best_v_in_c, v_in_c, sizeof(int) * (v_num + 1));
     }
     // if (c_size < best_c_size)
     // {
-        //        for (v = 1; v < v_num + 1; v++) {
-        //            best_v_in_c[v] = v_in_c[v];
-        //        }
-        //memcpy(best_v_in_c,v_in_c,sizeof(int)*(v_num+1));
+    //        for (v = 1; v < v_num + 1; v++) {
+    //            best_v_in_c[v] = v_in_c[v];
+    //        }
+    //memcpy(best_v_in_c,v_in_c,sizeof(int)*(v_num+1));
     // }
     // #ifndef NDEBUG
     //std::cout << best_c_size << '\t' << step << '\t' << TimeElapsed()<< std::endl;
@@ -246,9 +247,12 @@ bool judgeCut(int node)
 //TODO:权重设置阈值
 void updateWeight()
 {
+    double avg_weight = totalweight / v_num;
     for (int i = 1; i <= v_num; i++)
     {
-        int newweight = weight_para_aphle * frequency[i];
+        //平滑权重
+        int newweight = weight_para_aphle * frequency[i] + avg_weight * (1 - weight_para_aphle);
+        // int newweight = weight_para_aphle * frequency[i];
         if (newweight < 1)
             newweight = 1;
         int tobeminus = (frequency[i] - newweight);
