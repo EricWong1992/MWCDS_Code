@@ -91,7 +91,8 @@ void RemoveRedundant(int choice)
             Remove(bestRemoveV, choice);
             MarkCut();
             k = 0;
-        } else
+        }
+        else
         {
             break;
         }
@@ -476,13 +477,14 @@ bool Remove(int v, int choice = 1)
 }
 
 //增加权重，只对白点及其周围点
-//TODO:权重设置阈值
+//TODO:权重改变，暂时设置为5可以更快收敛
 void addWeight(int node)
 {
-    frequency[node]++;
+    int increment = 5;
+    frequency[node] += increment;
     for (int i = 0; i < v_degree[node]; i++)
-        subscore[v_adj[node][i]]++;
-    subscore[node]++;
+        subscore[v_adj[node][i]] += increment;
+    subscore[node] += increment;
 } //增加权重的总是白色点，周围及其自身的分数都要增加
 
 void minusWeight(int node, int tobeminus)
@@ -1553,6 +1555,26 @@ void Framework2TarjanFocus()
         removedNodeNeighbor->clear();
         printDebugMsg("NewTurn");
         LastRemovedIndex = 0;
+        // int best_removed_v = -1;
+        // best_removed_v = ChooseRemoveVTopof();
+        // if (best_removed_v != -1)
+        // {
+        //     Remove(best_removed_v, 1);
+        //     printDebugRemove(best_removed_v, step, step - time_stamp[best_removed_v]);
+        //     LastRemoved[LastRemovedIndex++] = best_removed_v;
+        //     time_stamp[best_removed_v] = step;
+        //     MarkCut();
+        // }
+        // best_removed_v = -1;
+        // best_removed_v = ChooseRemoveVTopofBMS(50, 0);
+        // if (best_removed_v != -1)
+        // {
+        //     Remove(best_removed_v, 1);
+        //     printDebugRemove(best_removed_v, step, step - time_stamp[best_removed_v]);
+        //     LastRemoved[LastRemovedIndex++] = best_removed_v;
+        //     time_stamp[best_removed_v] = step;
+        // }
+
         for (size_t i = 0; i < neighborSize; i++)
         {
             int best_removed_v = -1;
@@ -1709,6 +1731,26 @@ void Framework2TarjanScatter()
         //选点删除
         printDebugMsg("NewTurn");
         LastRemovedIndex = 0;
+        //         int best_removed_v = -1;
+        //         best_removed_v = ChooseRemoveVTopof();
+        //         if (best_removed_v != -1)
+        //         {
+        //             Remove(best_removed_v, 0);
+        //             printDebugRemove(best_removed_v, step, step - time_stamp[best_removed_v]);
+        //             LastRemoved[LastRemovedIndex++] = best_removed_v;
+        //             time_stamp[best_removed_v] = step;
+        //             MarkCut();
+        //         }
+        //         best_removed_v = -1;
+        //         best_removed_v = ChooseRemoveVTopofBMS(50, 0);
+        //         if (best_removed_v != -1)
+        //         {
+        //             Remove(best_removed_v, 0);
+        //             printDebugRemove(best_removed_v, step, step - time_stamp[best_removed_v]);
+        //             LastRemoved[LastRemovedIndex++] = best_removed_v;
+        //             time_stamp[best_removed_v] = step;
+        //         }
+
         for (size_t i = 0; i < neighborSize; i++)
         {
             int best_removed_v = -1;
