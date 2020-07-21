@@ -80,10 +80,10 @@ void RemoveRedundant(int choice)
         for (size_t i = 0; i < redundantNodes->size(); i++)
         {
             int redundantV = redundantNodes->element_at(k);
-            if (weight_backup[redundantV] > bestRemoveVWeight && isCut[redundantV] == 0 && v_in_c[redundantV] == 1 && v_fixed[redundantV] == 0)
+            if (weight[redundantV] > bestRemoveVWeight && isCut[redundantV] == 0 && v_in_c[redundantV] == 1 && v_fixed[redundantV] == 0)
             {
                 bestRemoveV = redundantV;
-                bestRemoveVWeight = weight_backup[redundantV];
+                bestRemoveVWeight = weight[redundantV];
             }
         }
         if (bestRemoveV != -1)
@@ -257,7 +257,7 @@ bool Add(int v, int choice = 1)
     subscore[v] = new_subscore;
     v_in_c[v] = 1;
     updateRedundantV(v);
-    currentWeight += weight_backup[v];
+    currentWeight += weight[v];
     c_size++;
     candidate[candidate_size] = v; //新加入的点总是最后加入
     index_in_candidate[v] = candidate_size++;
@@ -436,7 +436,7 @@ bool Remove(int v, int choice = 1)
     indexingreypoint[v] = greypointnum;
     greypointset[greypointnum++] = v; //删掉一个非割点后，这个点肯定是灰点
     v_in_c[v] = 0;
-    currentWeight -= weight_backup[v];
+    currentWeight -= weight[v];
     c_size--;
     outof_candidate[outof_candidate_size] = v; //新加入的点总是最后加入
     index_in_outofcandidate[v] = outof_candidate_size++;
@@ -512,7 +512,7 @@ void minusWeight(int node, int tobeminus)
 
 bool cmp(int a, int b)
 {
-    return (subscore[a] / weight_backup[a] > subscore[b] / weight_backup[b]);
+    return (subscore[a] / weight[a] > subscore[b] / weight[b]);
 }
 
 /**
@@ -532,7 +532,7 @@ int ChooseRemoveVTopof()
         v = candidate[i];
         if (isCut[v] == 1 || v_fixed[v] == 1 || v == choosedadd_v)
             continue;
-        cscore = subscore[v] / weight_backup[v];
+        cscore = subscore[v] / weight[v];
         if (step > taburemove[v])
         {
             //if(score[v]>best_score)
@@ -548,9 +548,9 @@ int ChooseRemoveVTopof()
                 //                if(score[v]>score[best_remove_v])
                 //                    best_remove_v=v;
                 //                else if (score[v]==score[best_remove_v])
-                //                if(weight_backup[v]>weight_backup[best_remove_v])
+                //                if(weight[v]>weight[best_remove_v])
                 //                    best_remove_v=v;
-                //                else if (weight_backup[v]==weight_backup[best_remove_v])
+                //                else if (weight[v]==weight[best_remove_v])
                 if ((dominated[v] < dominated[best_remove_v]) || (dominated[v] == dominated[best_remove_v] && time_stamp[v] < time_stamp[best_remove_v]))
                     best_remove_v = v;
             }
@@ -588,7 +588,7 @@ int ChooseRemoveVTopofBMS(int count, int choice)
             if (v_fixed[v] == 1 || isCut[v] == 1)
                 continue;
         }
-        cscore = subscore[v] / weight_backup[v];
+        cscore = subscore[v] / weight[v];
         toberemoved1[topIndex++] = v;
         if (step > taburemove[v])
         {
@@ -599,9 +599,9 @@ int ChooseRemoveVTopofBMS(int count, int choice)
             }
             else if (cscore == best_score)
             {
-                //                if(weight_backup[v]>weight_backup[best_remove_v])
+                //                if(weight[v]>weight[best_remove_v])
                 //                    best_remove_v=v;
-                //                else if (weight_backup[v]==weight_backup[best_remove_v])
+                //                else if (weight[v]==weight[best_remove_v])
                 if ((dominated[v] < dominated[best_remove_v]) || (dominated[v] == dominated[best_remove_v] && time_stamp[v] < time_stamp[best_remove_v]))
                     best_remove_v = v; //关乎safety！！！
             }
@@ -638,7 +638,7 @@ int ChooseRemoveVFromArray(Array *removedNodeNeighbor, int choice) //choice==0,t
             if (v_in_c[v] == 0 || inToberemoved[v] == 0 || v_fixed[v] == 1)
                 continue;
         }
-        cscore = subscore[v] / weight_backup[v];
+        cscore = subscore[v] / weight[v];
         if (step > taburemove[v])
         {
             if (cscore > best_cscore)
@@ -675,11 +675,11 @@ int ChooseAddVsubscorefast()
         for (int j = 0; j < v_degree[base_v]; ++j)
         {
             add_v = v_adj[base_v][j];
-            if (m.find(add_v) == m.end() && isgrey[add_v] && (weight_backup[add_v] + currentWeight < bestWeight))
+            if (m.find(add_v) == m.end() && isgrey[add_v] && (weight[add_v] + currentWeight < bestWeight))
             {
                 m[add_v] = topIndex; //不重复考虑
                 tobeadd1[topIndex++] = add_v;
-                cscore = subscore[add_v] / weight_backup[add_v];
+                cscore = subscore[add_v] / weight[add_v];
                 if (conf_change[add_v] == 1)
                 {
                     if (cscore > best_score)
@@ -734,11 +734,11 @@ int ChooseAddVsubscorefastAspration()
         for (int j = 0; j < v_degree[base_v]; ++j)
         {
             add_v = v_adj[base_v][j];
-            if (m.find(add_v) == m.end() && isgrey[add_v] && (weight_backup[add_v] + currentWeight < bestWeight))
+            if (m.find(add_v) == m.end() && isgrey[add_v] && (weight[add_v] + currentWeight < bestWeight))
             {
                 m[add_v] = topIndex; //不重复考虑
                 tobeadd1[topIndex++] = add_v;
-                cscore = subscore[add_v] / weight_backup[add_v];
+                cscore = subscore[add_v] / weight[add_v];
                 if (cscore > best_outCC_score)
                 {
                     best_outCC_score = cscore;
@@ -815,9 +815,9 @@ int ChooseAddVbest()
         for (int j = 0; j < v_degree[base_v]; ++j)
         {
             add_v = v_adj[base_v][j];
-            if (isgrey[add_v] && weight_backup[add_v] + currentWeight < bestWeight)
+            if (isgrey[add_v] && weight[add_v] + currentWeight < bestWeight)
             {
-                cscore = subscore[add_v] / weight_backup[add_v];
+                cscore = subscore[add_v] / weight[add_v];
                 if (cscore > best_score)
                 {
                     best_add_v = add_v;
@@ -845,12 +845,12 @@ int ChooseAddVtabufastbanlasttime() //仅仅禁掉刚刚上一轮刚刚删除的
         for (int j = 0; j < v_degree[base_v]; ++j)
         {
             add_v = v_adj[base_v][j];
-            if (m.find(add_v) == m.end() && isgrey[add_v] && weight_backup[add_v] + currentWeight < bestWeight)
+            if (m.find(add_v) == m.end() && isgrey[add_v] && weight[add_v] + currentWeight < bestWeight)
             //仅仅考虑白点周围的，加进来不让总权重超出的灰点,并且不重复考虑点
             {
                 m[add_v] = topIndex;
                 tobeadd1[topIndex++] = add_v; //tobeadd1中记录了所有的白点周围满足权重不超的灰点
-                cscore = subscore[add_v] / weight_backup[add_v];
+                cscore = subscore[add_v] / weight[add_v];
                 if (step != time_stamp[add_v]) //step不等于timestamp，则不是刚删的也不是刚加的
                 {
                     if (cscore > best_score)
@@ -898,11 +898,11 @@ int ChooseAddVtabufast()
         for (int j = 0; j < v_degree[base_v]; ++j)
         {
             add_v = v_adj[base_v][j];
-            if (m.find(add_v) == m.end() && isgrey[add_v] && weight_backup[add_v] + currentWeight < bestWeight)
+            if (m.find(add_v) == m.end() && isgrey[add_v] && weight[add_v] + currentWeight < bestWeight)
             //仅仅考虑白点周围的，加进来不让总权重超出的灰点,并且不重复考虑点
             {
                 m[add_v] = topIndex; //不重复考虑
-                cscore = subscore[add_v] / weight_backup[add_v];
+                cscore = subscore[add_v] / weight[add_v];
                 tobeadd1[topIndex++] = add_v; //所有满足条件的灰点放进tobeadd1中
                 if (step >= tabuadd[add_v])   //刚被删除的点必然被禁忌，因此进不来这里
                 {
@@ -958,11 +958,11 @@ int ChooseAddVtabufastAspration() //解禁的tabu选点
         for (int j = 0; j < v_degree[base_v]; ++j)
         {
             add_v = v_adj[base_v][j];
-            if (m.find(add_v) == m.end() && isgrey[add_v] && weight_backup[add_v] + currentWeight < bestWeight)
+            if (m.find(add_v) == m.end() && isgrey[add_v] && weight[add_v] + currentWeight < bestWeight)
             //仅仅考虑白点周围的，加进来不让总权重超出的灰点,并且不重复考虑点
             {
                 m[add_v] = topIndex; //不重复考虑
-                cscore = subscore[add_v] / weight_backup[add_v];
+                cscore = subscore[add_v] / weight[add_v];
                 if (cscore > best_outtabu_score)
                 {
                     best_outtabu_addv = add_v;

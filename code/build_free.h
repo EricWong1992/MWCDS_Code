@@ -35,7 +35,7 @@ int BuildInstance(string filename)
             infile >> v_num >> e_num;
             /*****************new******************/
             frequency = new int[v_num + 1];
-            weight_backup = new double[v_num + 1];
+            weight = new double[v_num + 1];
             weightthreshold = (v_num + 1) * para_gama;
             v_threshold = new int[v_num + 1];
             score = new int[v_num + 1];
@@ -132,7 +132,7 @@ int BuildInstance(string filename)
             double vertex_weight;
             infile >> v >> vertex_weight;
             frequency[v] = 1;
-            weight_backup[v] = vertex_weight;
+            weight[v] = vertex_weight;
             totalweight += vertex_weight;
         }
         if (strcmp(tempStr, "e") == 0)
@@ -143,12 +143,12 @@ int BuildInstance(string filename)
             edge[edgeCount].v = v;
             edge[edgeCount].next = first[edge[edgeCount].u];
             first[edge[edgeCount].u] = edgeCount;
-            
+
             edge[edgeCount + 1].u = edge[edgeCount].v;
             edge[edgeCount + 1].v = edge[edgeCount].u;
             edge[edgeCount + 1].next = first[edge[edgeCount + 1].u];
             first[edge[edgeCount + 1].u] = edgeCount + 1;
-            
+
             ++v_degree[u];
             ++v_degree[v];
             edgeCount += 2;
@@ -238,7 +238,7 @@ void FreeMemory()
     delete[] isgrey;
     delete[] edge;
     delete[] frequency;
-    delete[] weight_backup;
+    delete[] weight;
     delete[] subscore;
     delete[] toberemoved;
     delete[] outofcut;

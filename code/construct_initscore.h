@@ -114,13 +114,13 @@ void initSubScore()
         {
             if (dominated[v] == 1)
             {
-                tempSubScore -= weight_backup[v];
+                tempSubScore -= weight[v];
                 for (size_t n = 0; n < v_degree[v]; n++)
                 {
                     int neighbor = v_adj[v][n];
                     if (dominated[neighbor] == 1)
                     {
-                        tempSubScore -= weight_backup[neighbor];
+                        tempSubScore -= weight[neighbor];
                     }
                 }
             }
@@ -128,13 +128,13 @@ void initSubScore()
         else
         {
             //v不在D中, subscore为正
-            tempSubScore += weight_backup[v];
+            tempSubScore += weight[v];
             for (size_t n = 0; n < v_degree[v]; n++)
             {
                 int neighbor = v_adj[v][n];
                 if (dominated[neighbor] == 0)
                 {
-                    tempSubScore += weight_backup[neighbor];
+                    tempSubScore += weight[neighbor];
                 }
             }
         }
@@ -234,7 +234,7 @@ void addNodeInit(int i)
 {
     updateS(i); //更新候选集
     v_in_c[i] = 1;
-    currentWeight += weight_backup[i];
+    currentWeight += weight[i];
     isInS[i] = false;
     //被支配了多次
     if (dominated[i] != 0)
