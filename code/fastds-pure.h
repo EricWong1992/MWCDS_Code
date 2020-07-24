@@ -99,6 +99,218 @@ void RemoveRedundant(int choice)
     }
 }
 
+int NewSolutionChooseVFromMethodA()
+{
+    int best_add_v = -1;
+    double cscore;
+    double best_cscore = -weightthreshold;
+    if (c_size == 0)
+    {
+        for (size_t i = 1; i < v_num + 1; i++)
+        {
+            cscore = subscore[i] / weight[i];
+            if (cscore > best_cscore)
+            {
+                best_add_v = i;
+                best_cscore = cscore;
+            }
+            else if (cscore == best_cscore)
+            {
+                if (subWeight[i] > subWeight[best_add_v])
+                {
+                    best_add_v = i;
+                }
+            }
+        }
+    }
+    else
+    {
+        //从灰点中选择
+        // cout << "greyNum:" << greypointnum << endl;
+        for (size_t i = 0; i < greypointnum; i++)
+        {
+            int greyPoint = greypointset[i];
+            cscore = subscore[greyPoint] / weight[greyPoint];
+            if (cscore > best_cscore)
+            {
+                best_add_v = greyPoint;
+                best_cscore = cscore;
+            }
+            else if (cscore == best_cscore)
+            {
+                if (subWeight[greyPoint] > subWeight[best_add_v])
+                {
+                    best_add_v = greyPoint;
+                }
+            }
+        }
+    }
+    return best_add_v;
+}
+int NewSolutionChooseVFromMethodB()
+{
+}
+
+int NewSolutionChooseVFromMethodC()
+{
+    int best_add_v = -1;
+    double cscore;
+    double best_cscore = -weightthreshold;
+    if (c_size == 0)
+    {
+        for (size_t i = 1; i < v_num + 1; i++)
+        {
+            cscore = subscore[i] / weight[i];
+            if (cscore > best_cscore)
+            {
+                best_add_v = i;
+                best_cscore = cscore;
+            }
+            else if (cscore == best_cscore)
+            {
+                if (pre_deci_step[i] > pre_deci_step[best_add_v])
+                {
+                    best_add_v = i;
+                }
+            }
+        }
+    }
+    else
+    {
+        //从灰点中选择
+        // cout << "greyNum:" << greypointnum << endl;
+        for (size_t i = 0; i < greypointnum; i++)
+        {
+            int greyPoint = greypointset[i];
+            cscore = subscore[greyPoint] / weight[greyPoint];
+            if (cscore > best_cscore)
+            {
+                best_add_v = greyPoint;
+                best_cscore = cscore;
+            }
+            else if (cscore == best_cscore)
+            {
+                if (pre_deci_step[greyPoint] > pre_deci_step[best_add_v])
+                {
+                    best_add_v = greyPoint;
+                }
+            }
+        }
+    }
+    return best_add_v;
+}
+
+int NewSolutionChooseVFromMethodD()
+{
+}
+
+void Restart()
+{
+    cout << "restart" << endl;
+    //备份数据
+    last_c_size = c_size;
+    memcpy(last_v_in_c, v_in_c, sizeof(int) * (v_num + 1));
+    //重置数据
+    fill_n(v_in_c, v_num + 1, 0);
+    fill_n(isgrey, v_num + 1, 0);
+    fill_n(dominated, v_num + 1, 0);
+    fill_n(taburemove, v_num + 1, 0);
+    fill_n(tabuadd, v_num + 1, 0);
+    fill_n(conf_change, v_num + 1, 1);
+    fill_n(v_fixed, v_num + 1, 0);
+    fill_n(isCut, v_num + 1, 0);
+    fill_n(cutPointSet, v_num + 1, 0);
+    fill_n(inToberemoved, v_num + 1, 0);
+    fill_n(indextoberemoved, v_num + 1, 1);
+    c_size = 0;
+    cutIndex = 0;
+    toberemovedNum = 0;
+    undom_stack_fill_pointer = 0;
+    currentWeight = 0;
+    totalweight = totalweight_backup;
+    for (size_t i = 1; i < v_num + 1; i++)
+    {
+        Undom(i);
+    }
+    greypointnum = 0;
+    if (currentMode == ChooseMode::ModeC)
+    {
+        add_step = 0;
+    }
+    //构造新解
+    ConstructNewSolution();
+    //选点完毕subweight清空, 重新记录
+    //score, subscore清除
+    fill_n(score, v_num + 1, 0);
+    lowerScore();
+    initSubScore();
+    if (currentMode == ChooseMode::ModeA || currentMode == ChooseMode::ModeB)
+    {
+        fill_n(subWeight, v_num + 1, 0);
+    }
+    else if (currentMode == ChooseMode::ModeC)
+    {
+        memcpy(pre_deci_step, temp_pre_deci_step, sizeof(int) * (v_num + 1));
+        fill_n(temp_pre_deci_step, v_num + 1, v_num);
+    }
+
+    //删除新解中冗余
+    RemoveRedundant(0);
+    cout << "c_size:" << c_size << endl;
+    cout << "newSolutionWeight:" << currentWeight << endl;
+
+    //初始化所有candidate用于寻找割点
+    for (int i = 1; i <= v_num; ++i)
+    {
+        candidate[candidate_size++] = i;
+    }
+    //使用割点fix
+    MarkCut();
+    for (int i = 0; i < cutIndex; ++i)
+    {
+        if (isCut[cutPointSet[i]] != 0)
+        {
+            int cutPoint = cutPointSet[i];
+            v_fixed[cutPoint] = 1;
+            fixedSet[fixedNum++] = cutPoint;
+        }
+    }
+    //还原candidate
+    ResetCandidate();
+}
+
+void ConstructNewSolution()
+{
+    //开始构建解
+    while (undom_stack_fill_pointer != 0)
+    {
+        int addV = -1;
+        switch (currentMode)
+        {
+        case ChooseMode::ModeA:
+            addV = NewSolutionChooseVFromMethodA();
+            break;
+        case ChooseMode::ModeB:
+            addV = NewSolutionChooseVFromMethodA();
+            break;
+        case ChooseMode::ModeC:
+            addV = NewSolutionChooseVFromMethodC();
+            break;
+        case ChooseMode::ModeD:
+            addV = NewSolutionChooseVFromMethodD();
+            break;
+        }
+        if (addV != -1)
+        {
+            Add(addV, 1);
+            if (currentMode == ChooseMode::ModeC)
+            {
+                temp_pre_deci_step[addV] = add_step++;
+            }
+        }
+    }
+}
+
 void increase_dominate(long v, long source_v)
 {
     if (dominated[v] == 0)
@@ -116,10 +328,13 @@ void increase_dominate(long v, long source_v)
         }
         Dom(v);
         onlydominate[v] = source_v; //libohan_10_6
-        isgrey[v] = 1;
-        indexingreypoint[v] = greypointnum;
-        greypointset[greypointnum++] = v; //新被支配的白点变成灰点
-    }                                     //一个原本不被支配的点变得被支配了，该点以及周围的点都要分数-1
+        if (v != source_v)
+        {
+            isgrey[v] = 1;
+            indexingreypoint[v] = greypointnum;
+            greypointset[greypointnum++] = v; //新被支配的白点变成灰点
+        }
+    } //一个原本不被支配的点变得被支配了，该点以及周围的点都要分数-1
     else if (dominated[v] == 1)
     {
         if (v_in_c[v] == 1)
@@ -161,8 +376,6 @@ void increase_dominate(long v, long source_v)
     //    }
     //  }
 }
-
-bool test_score();
 
 void addUpdate(int v)
 {
@@ -237,11 +450,19 @@ bool Add(int v, int choice = 1)
 {
     if (v_in_c[v] == 1 || v < 0)
         return false; //不会重复加入
-    isgrey[v] = 0;
-    int indextmp = indexingreypoint[v];
-    int last = greypointset[--greypointnum];
-    indexingreypoint[last] = indextmp;
-    greypointset[indextmp] = last; //新加入的点原先是灰点，要删除
+    //构建新解调用时，加入的点不一定是灰点
+    if (isgrey[v] == 1)
+    {
+        isgrey[v] = 0;
+        int indextmp = indexingreypoint[v];
+        int last = greypointset[--greypointnum];
+        indexingreypoint[last] = indextmp;
+        greypointset[indextmp] = last; //新加入的点原先是灰点，要删除
+    }
+    if (currentMode == ChooseMode::ModeA)
+    {
+        subWeight[v]++;
+    }
 
     int new_score = -score[v];
     int new_subscore = -subscore[v];
@@ -485,6 +706,10 @@ void addWeight(int node)
     for (int i = 0; i < v_degree[node]; i++)
         subscore[v_adj[node][i]] += increment;
     subscore[node] += increment;
+    if (currentMode == ChooseMode::ModeB)
+    {
+        subWeight[node]++;
+    }
 } //增加权重的总是白色点，周围及其自身的分数都要增加
 
 void minusWeight(int node, int tobeminus)
@@ -1079,18 +1304,35 @@ void localSearchFramework2()
     //     Framework2Tarjan();
     //    Framework2TarjanFocus();
     //    Framework2TarjanScatter();
+    int noImproveRestart = 3; //解质量没提升重启
+    int noImproveCount = 0;
     int control = 0;
     while (TimeElapsed() < cutoff_time)
     {
-        if (control % 2 == 0)
-        {
-            Framework2TarjanScatter();
-        }
-        else
-        {
-            Framework2TarjanFocus();
-        }
-        control++;
+        //TODO:测试代码
+        Framework2TarjanScatter();
+        // Framework2TarjanFocus();
+        Restart();
+
+
+        //        if (noImproveCount < noImproveRestart)
+        //        {
+        //            if (control % 2 == 0)
+        //            {
+        //                Framework2TarjanScatter();
+        //            }
+        //            else
+        //            {
+        //                Framework2TarjanFocus();
+        //            }
+        //            control++;
+        //        } else
+        //        {
+        //            Restart();
+        //            noImproveCount = 0;
+        //            control = 0;
+        //        }
+        //        noImproveCount++;
     }
 }
 
@@ -1366,8 +1608,8 @@ void Framework2CutTree()
     }
 }
 
-int instance0 = floor0 * insTimes;
-int gap0 = floor0 * ceilingTimes;
+int instance0 = floor0 * insTimes; //50*2
+int gap0 = floor0 * ceilingTimes;  //50*10
 int flag = 0;
 void Framework1Tarjan()
 {
@@ -1507,6 +1749,16 @@ void Framework1Tarjan()
 void Framework2TarjanFocus()
 {
     cout << "it's tarjanFocus now\n";
+    if (c_size < 5000)
+    {
+        gap0 = floor0 * ceilingTimes * 10;
+        instance0 = floor0 * insTimes * 10;
+    }
+    else
+    {
+        gap0 = floor0 * ceilingTimes;
+        instance0 = floor0 * insTimes;
+    }
     try_step = 1000;
     int improvementCount = 0;
     int stepAction = 1;
@@ -1517,13 +1769,6 @@ void Framework2TarjanFocus()
     MarkCut();
     while (true)
     {
-        if (c_size < 5000 && flag == 0)
-        {
-            floor0 *= 10;
-            gap0 = floor0 * ceilingTimes;
-            instance0 = floor0 * insTimes;
-            flag = 1;
-        }
         if (stepAction % try_step == 0)
         {
             int timenow = TimeElapsed();
@@ -1539,12 +1784,18 @@ void Framework2TarjanFocus()
                 //                }
                 //                return;
             }
+            cout << "step:" << step << " noimprovementstep:" << NOimprovementstep << endl;
             if (NOimprovementstep > instance0)
             { //局部搜索中
                 instance0 += floor0;
                 if (instance0 > gap0)
                     instance0 = gap0;
                 //return;
+            }
+            //TODO:临时方案，待修改
+            if (NOimprovementstep > 10000)
+            {
+                return;
             }
         }
         if (candidate_size == 1)
@@ -1631,7 +1882,8 @@ void Framework2TarjanFocus()
             //            int best_add_v = ChooseAddVtabufastAspration();
             //            int best_add_v=ChooseAddVbest();
             //            int best_add_v=ChooseAddVtabufastbanlasttime();
-            if (best_add_v == -1)
+            //防止加入的点为冗余顶点，下一步删除之后重新被选择陷入死循环
+            if (best_add_v == -1 || time_stamp[best_add_v] == step)
                 break; //如果没有找到白点周围的，能让权重和不超的灰点，则退出循环
             printDebugAdd(best_add_v, step, step - time_stamp[best_add_v]);
             Add(best_add_v, 1);
@@ -1684,6 +1936,16 @@ void Framework2TarjanFocus()
 void Framework2TarjanScatter()
 {
     cout << "it's scatterTarjan now\n";
+    if (c_size < 5000)
+    {
+        gap0 = floor0 * ceilingTimes * 10;
+        instance0 = floor0 * insTimes * 10;
+    }
+    else
+    {
+        gap0 = floor0 * ceilingTimes;
+        instance0 = floor0 * insTimes;
+    }
     try_step = 1000;
     int improvementCount = 0;
     int stepAction = 1;
@@ -1694,13 +1956,6 @@ void Framework2TarjanScatter()
     MarkCut();
     while (true)
     {
-        if (c_size < 5000 && flag == 0)
-        {
-            floor0 *= 10;
-            gap0 = floor0 * ceilingTimes;
-            instance0 = floor0 * insTimes;
-            flag = 1;
-        }
         if (stepAction % try_step == 0)
         {
             int timenow = TimeElapsed();
@@ -1778,7 +2033,7 @@ void Framework2TarjanScatter()
             //            int best_add_v = ChooseAddVsubscorefastAspration();
             //            int best_add_v = ChooseAddVtabufast();//在这里不用这个tabu的函数，因为是CC框架
             // int best_add_v=ChooseAddVtabufastNolastRemove();
-            if (best_add_v == -1)
+            if (best_add_v == -1 || time_stamp[best_add_v] == step)
                 break; //如果没有找到白点周围的，能让权重和不超的灰点，则退出循环
             printDebugAdd(best_add_v, step, step - time_stamp[best_add_v]);
             Add(best_add_v, 0); //CC的Add
@@ -1786,6 +2041,11 @@ void Framework2TarjanScatter()
             time_stamp[best_add_v] = step;
             //            step++;
         }
+        if (undom_stack_fill_pointer == 0)
+        {
+            cout << "currentWeight:" << currentWeight << endl;
+        }
+
         //已全部支配，判断当前解是否为更优解
         if (undom_stack_fill_pointer == 0 && currentWeight < bestWeight)
         {

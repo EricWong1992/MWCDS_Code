@@ -40,6 +40,26 @@ EdgeLib *edge; //存储边信息
 
 chrono::steady_clock::time_point start;
 
+enum ChooseMode
+{
+    ModeA = 0,
+    ModeB,
+    ModeC,
+    ModeD,
+};
+
+//重启时选点模式
+ChooseMode currentMode = ChooseMode::ModeC;
+/*
+    重启时选点副评分
+    ModeA时代表频繁进入Candidate的频度，add()时更新
+    ModeB时代表经常不在Candidate的频度，addWeight()时更新
+*/
+int *subWeight;
+int *pre_deci_step; //上一轮构造解中顶点选择顺序
+int *temp_pre_deci_step; //暂存本轮构造解时顶点选择顺序，值越大的点优先级越高
+int add_step = 0; //构造解时添加顶点的step
+
 //setting
 bool running_is_interrupted = false;
 
@@ -108,7 +128,7 @@ int *dominated; //论文中的dd:dominated degree
 int *greypointset;
 int *indexingreypoint;
 int *isgrey;
-int greypointnum;
+int greypointnum = 0;
 //int cur_c_size;
 int c_size;
 int *v_in_c;
@@ -127,6 +147,10 @@ int *best_dominated;
 double best_comp_time;
 llong best_step;
 
+//上次启动最后的解
+int last_c_size;
+int *last_v_in_c;
+
 int *undom_stack;
 int undom_stack_fill_pointer;
 int *index_in_undom_stack;
@@ -143,7 +167,6 @@ int *dnf;
 int *low;
 int *isCut;
 //int *recordisCut;
-int *recordCutPointSet;
 //int recordcutIndex;
 int *RemovedPoint; //删掉的点的集合
 int *AddedPoint;   //加入的点的集合
@@ -170,6 +193,7 @@ llong averagedegree = 0;
 //int Cmax; //无提升的最大周期
 //double Temperature;
 double totalweight;
+double totalweight_backup;
 double weightthreshold;   //权重阈值
 double currentWeight = 0; //当前解权重和
 double bestWeight;        //当前最优解权重和
@@ -205,7 +229,6 @@ void RemoveInit(int);
 void init_increase_dominate(int);
 void init_decrease_dominate(int);
 void init_removeRedundant();
-void removeRedundant();
 void lowerScore();
 bool test_score();
 void LocalSearch();
@@ -222,4 +245,10 @@ void Framework2TarjanFocus();   //集中
 void Framework2TarjanScatter(); //散点
 bool checkLastRemoved(int node);
 void updateRedundantV(int);
-void RemoveRedundant();
+void RemoveRedundant(int);
+void Restart();
+void ConstructNewSolution();
+int NewSolutionChooseVFromMethodA(); //副分数选择频繁进出Candidate的点
+int NewSolutionChooseVFromMethodB(); //副分数选择总不在Candidate的点
+int NewSolutionChooseVFromMethodC(); //副分数尽量选择和上一轮构造不同的点
+int NewSolutionChooseVFromMethodD(); //从solution pool中选解mix

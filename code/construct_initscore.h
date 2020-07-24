@@ -235,6 +235,10 @@ void addNodeInit(int i)
     updateS(i); //更新候选集
     v_in_c[i] = 1;
     currentWeight += weight[i];
+    if (currentMode == ChooseMode::ModeC)
+    {
+        pre_deci_step[i] = add_step++;
+    }
     isInS[i] = false;
     //被支配了多次
     if (dominated[i] != 0)

@@ -36,6 +36,9 @@ int BuildInstance(string filename)
             /*****************new******************/
             frequency = new int[v_num + 1];
             weight = new double[v_num + 1];
+            subWeight = new int[v_num + 1];
+            pre_deci_step = new int[v_num + 1];
+            temp_pre_deci_step = new int[v_num + 1];
             weightthreshold = (v_num + 1) * para_gama;
             v_threshold = new int[v_num + 1];
             score = new int[v_num + 1];
@@ -56,6 +59,7 @@ int BuildInstance(string filename)
             outof_candidate = new int[v_num + 1];
             index_in_outofcandidate = new int[v_num + 1];
             best_v_in_c = new int[v_num + 1];
+            last_v_in_c = new int[v_num + 1];
             conf_change = new int[v_num + 1];
             dominated = new int[v_num + 1];
             best_dominated = new int[v_num + 1];
@@ -70,7 +74,6 @@ int BuildInstance(string filename)
             dnf = new int[v_num + 1];
             low = new int[v_num + 1];
             isCut = new int[v_num + 1];
-            recordCutPointSet = new int[v_num + 1];
             index_in_undom_stack = new int[v_num + 1];
             v_fixed = new int[v_num + 1];
             RemovedPoint = new int[v_num + 1];
@@ -98,6 +101,9 @@ int BuildInstance(string filename)
             my_heap_count = 0;
 
             /*****************fill_n******************/
+            fill_n(pre_deci_step, v_num + 1, v_num);
+            fill_n(temp_pre_deci_step, v_num + 1, v_num);
+            fill_n(subWeight, v_num + 1, 0);
             fill_n(v_threshold, v_num + 1, 0);
             fill_n(v_degree, v_num + 1, 0);
             fill_n(child, v_num + 1, 0);
@@ -118,7 +124,6 @@ int BuildInstance(string filename)
             fill_n(low, v_num + 1, 0);
             fill_n(isCut, v_num + 1, 0);
             fill_n(cutPointSet, v_num + 1, 0);
-            fill_n(recordCutPointSet, v_num + 1, 0);
             fill_n(first, v_num + 1, -1);
             fill_n(inToberemoved, v_num + 1, 0);
             fill_n(indextoberemoved, v_num + 1, 1);
@@ -155,6 +160,7 @@ int BuildInstance(string filename)
         }
         infile >> tempStr;
     }
+    totalweight_backup = totalweight;
     bestWeight = totalweight;
 
     infile.close();
@@ -212,6 +218,10 @@ void FreeMemory()
     delete[] index_in_undom_stack;
     delete[] conf_change;
     delete[] best_v_in_c;
+    delete[] last_v_in_c;
+    delete[] subWeight;
+    delete[] pre_deci_step;
+    delete[] temp_pre_deci_step;
     delete[] index_in_candidate;
     delete[] candidate;
     delete[] v_in_c;
