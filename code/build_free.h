@@ -1,5 +1,6 @@
 
-#include "my_heap.h"
+#include "basic.h"
+
 double TimeElapsed()
 {
     chrono::steady_clock::time_point finish = chrono::steady_clock::now();
@@ -79,8 +80,8 @@ int BuildInstance(string filename)
             RemovedPoint = new int[v_num + 1];
             AddedPoint = new int[v_num + 1];
             cutPointSet = new int[v_num + 1];
-            my_heap = new int[v_num + 1];
-            pos_in_my_heap = new int[v_num + 1];
+             my_heap = new int[v_num + 1];
+             pos_in_my_heap = new int[v_num + 1];
             toberemoved = new int[v_num + 1];
             outofcut = new int[v_num + 1];
             taburemove = new long[v_num + 1];
@@ -96,9 +97,7 @@ int BuildInstance(string filename)
             indextoberemoved = new int[v_num + 1];
             removedNodeNeighbor = new Array(v_num);
             redundantNodes = new Array(v_num);
-            /***********************************/
-
-            my_heap_count = 0;
+//            myHeap = new MyHeap(v_num + 1);
 
             /*****************fill_n******************/
             fill_n(pre_deci_step, v_num + 1, v_num);
@@ -160,7 +159,6 @@ int BuildInstance(string filename)
         }
         infile >> tempStr;
     }
-    totalweight_backup = totalweight;
     bestWeight = totalweight;
 
     infile.close();
@@ -213,6 +211,7 @@ void FreeMemory()
     }
     delete removedNodeNeighbor;
     delete redundantNodes;
+//    delete myHeap;
     delete[] dominated;
     delete[] undom_stack;
     delete[] index_in_undom_stack;
@@ -229,10 +228,9 @@ void FreeMemory()
     delete[] v_adj;
     delete[] v_edges;
     delete[] time_stamp;
-    // delete[] sub_score;
     delete[] score;
-    delete[] my_heap;
-    delete[] pos_in_my_heap;
+     delete[] my_heap;
+     delete[] pos_in_my_heap;
     delete[] pre;
     delete[] CV;
     delete[] WV;

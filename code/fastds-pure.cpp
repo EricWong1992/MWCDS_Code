@@ -1,3 +1,8 @@
+#include "my_heap.h"
+#include "build_free.h"
+#include "update.h"
+#include "checker.h"
+#include "construct_initscore.h"
 #include "fastds-pure.h"
 #include "parse_cmd.h"
 #include <sstream>

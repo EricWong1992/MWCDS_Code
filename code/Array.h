@@ -1,7 +1,5 @@
 #ifndef _ARRAY_H
 #define _ARRAY_H
-#endif // _ARRAY_H
-
 #include <cstring>
 
 class Array
@@ -82,17 +80,17 @@ public:
         return index_in_array[e];
     }
 
-    int element_at(int i)
+    int element_at(int i) const
     {
         return array[i];
     }
 
-    bool is_in_array(int e)
+    bool is_in_array(int e) const
     {
         return index_in_array[e] != -1;
     }
 
-    int size()
+    int size() const
     {
         return array_size;
     }
@@ -112,3 +110,4 @@ public:
         return array[rand() % array_size];
     }
 };
+#endif // _ARRAY_H

@@ -1,3 +1,5 @@
+#ifndef _BASIC_H
+#define _BASIC_H
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -11,6 +13,7 @@
 #include <map>
 #include <string>
 #include "Array.h"
+//#include "my_heap.h"
 
 using namespace std;
 
@@ -56,9 +59,9 @@ ChooseMode currentMode = ChooseMode::ModeC;
     ModeB时代表经常不在Candidate的频度，addWeight()时更新
 */
 int *subWeight;
-int *pre_deci_step; //上一轮构造解中顶点选择顺序
+int *pre_deci_step;      //上一轮构造解中顶点选择顺序
 int *temp_pre_deci_step; //暂存本轮构造解时顶点选择顺序，值越大的点优先级越高
-int add_step = 0; //构造解时添加顶点的step
+int add_step = 0;        //构造解时添加顶点的step
 
 //setting
 bool running_is_interrupted = false;
@@ -100,9 +103,10 @@ bool rightAfternewlow = true; //刚刚刷新了一次新纪录
 Array *removedNodeNeighbor;   //用来暂存删除顶点的邻居
 Array *redundantNodes;        //用来记录score为0的冗余结点
 
+//MyHeap * myHeap; //用于初始化解
+
 int *score;
 int *initscore; //初始化阶段的分数，即2Wv+Cv-1
-// int *sub_score;
 llong *time_stamp;
 //double s_alpha;
 //double s_beta;
@@ -193,7 +197,6 @@ llong averagedegree = 0;
 //int Cmax; //无提升的最大周期
 //double Temperature;
 double totalweight;
-double totalweight_backup;
 double weightthreshold;   //权重阈值
 double currentWeight = 0; //当前解权重和
 double bestWeight;        //当前最优解权重和
@@ -205,37 +208,83 @@ int *inToberemoved;
 int *indextoberemoved;
 int toberemovedNum;
 
+//my_heap.h
+int *pos_in_my_heap;
+int *my_heap;
+int my_heap_count = 0;
+bool my_heap_is_leaf(int);
+int my_heap_left_child(int);
+int my_heap_right_child(int);
+int my_heap_parent(int);
+void my_heap_swap(int, int);
+void my_heap_shiftdown(int);
+void my_heap_insert(int);
+int my_heap_remove_first();
+int my_heap_remove(int);
+
+//build_free.h
 double TimeElapsed();
 int BuildInstance(string);
 void FreeMemory();
+
+//construct_initscore.h
+void init_increase_dominate(int, int);
 int find(int);
 void join(int, int);
 int calCV(int);
-inline void Undom(int);
-inline void Dom(int);
-bool Add(int, int);
-bool Remove(int, int);
-void ConstructDS();
-void ConstructByDegree();
-void ConstructByScore();
+void lowerScore();
+void initSubScore();
+void joinV(int);
+void addToS(int);
+void updateS(int);
+int chooseMax();
+void addNodeInit(int);
+void ConstructByInitScore();
+
+//update.h
+int ind = 0;
+int root = 1;
+int maxScore = 0; //删除点时的最大分数
+int maxPoint = 0; //选中的最大点
+int Toroot = -1;  //直接连接root的点，有则标号，无则-1
 void ResetCandidate();
 void UpdateBestSolution();
-bool CheckSolution();
-int UpdateTargetSize(int);
-int ChooseRemoveV(int);
-int ChooseAddV(int);
-void AddInit();
-void RemoveInit(int);
-void init_increase_dominate(int);
-void init_decrease_dominate(int);
-void init_removeRedundant();
-void lowerScore();
+void cutPoint(int, int);
+void cutPointNoRecur(int);
+void cutPoint1(long);
+bool judgeCut(int);
+void updateWeight();
+void updateSubscore();
+
+//checker.h
 bool test_score();
-void LocalSearch();
+bool CheckSolution();
+bool CheckSolutionIsConnected();
+bool CheckGraphIsConnected();
+
+//fastds-pure.h
+inline void Undom(int);
+inline void Dom(int);
+void increase_dominate(long, long);
+void decrease_dominate(int);
+bool Add(int, int);
+bool Remove(int, int);
 void MarkCut();
+void MarkCuttree();
+void addWeight(int);
 void minusWeight(int, int);
+void addUpdate(int);
 void removeUpdate(int);
+bool checkLastRemoved(int);
+int ChooseAddVsubscorefast();
+int ChooseAddVsubscorefastAspration();
+int ChooseAddVbest();
+int ChooseAddVtabufastbanlasttime();
+int ChooseAddVtabufast();
+int ChooseAddVtabufastAspration();
+int ChooseRemoveVTopof();
 int ChooseRemoveVTopofBMS(int count, int choice);
+int ChooseRemoveVFromArray(Array *, int);
 void localSearchFramework1();
 void localSearchFramework2();
 void Framework1CutTree();
@@ -243,7 +292,6 @@ void Framework1Tarjan();
 void Framework2CutTree();
 void Framework2TarjanFocus();   //集中
 void Framework2TarjanScatter(); //散点
-bool checkLastRemoved(int node);
 void updateRedundantV(int);
 void RemoveRedundant(int);
 void Restart();
@@ -252,3 +300,5 @@ int NewSolutionChooseVFromMethodA(); //副分数选择频繁进出Candidate的�
 int NewSolutionChooseVFromMethodB(); //副分数选择总不在Candidate的点
 int NewSolutionChooseVFromMethodC(); //副分数尽量选择和上一轮构造不同的点
 int NewSolutionChooseVFromMethodD(); //从solution pool中选解mix
+
+#endif

@@ -1,7 +1,7 @@
 
-#include "construct_score.h"
+#include "basic.h"
 
-void init_increase_dominate_simple(int v, int source_v)
+void init_increase_dominate(int v, int source_v)
 {
     if (dominated[v] == 0)
     {            //如果该点本身没有被支配
@@ -56,7 +56,6 @@ void join(int a, int b)
 
 /**
  计算点相邻的连通分支数量
- 
  @param node 节点号
  */
 int calCV(int node)
@@ -188,41 +187,8 @@ void updateS(int i)
     }
 }
 
-//选出分数最高的点
-int chooseMax()
-{
-    int max = 0;
-    int index = -1;
-    for (int i = 0; i < Snum; i++)
-    {
-        int p = S[i];
-        if (dominated[p] == 0)
-        {
-            initscore[p] = 2 * WV[p] - 1;
-        } //白色点的CV=0
-        else
-        {
-            initscore[p] = 2 * WV[p] + calCV(p) - 1;
-        }
-        if (initscore[p] > max)
-        {
-            max = initscore[p];
-            index = i;
-        }
-    }
-    if (max > 0)
-    {
-        int tmp = S[Snum - 1];
-        S[Snum - 1] = S[index];
-        S[index] = tmp;
-        return S[--Snum];
-    }
-    else
-        return -1;
-}
-
 //返回最大score值顶点(直接取堆顶)
-int chooseMax1()
+int chooseMax()
 {
     if (initscore[my_heap[0]] > 0)
         return my_heap[0];
@@ -234,6 +200,7 @@ void addNodeInit(int i)
 {
     updateS(i); //更新候选集
     v_in_c[i] = 1;
+    // cout << i << endl;
     currentWeight += weight[i];
     if (currentMode == ChooseMode::ModeC)
     {
@@ -264,9 +231,9 @@ void addNodeInit(int i)
             my_heap_insert(u);
         }
     }
-    init_increase_dominate_simple(i, i);
+    init_increase_dominate(i, i);
     for (int j = 0; j < v_degree[i]; j++)
-        init_increase_dominate_simple(v_adj[i][j], i); //改变WV time=>二阶邻居
+        init_increase_dominate(v_adj[i][j], i); //改变WV time=>二阶邻居
 
 } //加入到candidate中
 void ConstructByInitScore()
@@ -286,14 +253,14 @@ void ConstructByInitScore()
     int pos = pos_in_my_heap[maxDegreeNode];
     my_heap_remove(pos);
     ds_size++;
-    int maxTmpIndex = chooseMax1();
+    int maxTmpIndex = chooseMax();
     while (maxTmpIndex != -1 && (undom_stack_fill_pointer != 0 || connectedNum != 1))
     { //不是CDS且返回值不是-1
         int pos = pos_in_my_heap[maxTmpIndex];
         my_heap_remove(pos);
         addNodeInit(maxTmpIndex);
         ds_size++;
-        maxTmpIndex = chooseMax1();
+        maxTmpIndex = chooseMax();
     }
     c_size = ds_size;
     fill_n(score, v_num + 1, 0);

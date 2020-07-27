@@ -1,55 +1,6 @@
 
-#include "construct_initscore.h"
+#include "basic.h"
 #include <queue>
-
-/*
-更新候选解，使用BMS去掉一个顶点
-@param choice: 0 candidate; 1 toberemoved
-@return removed vertex
-*/
-int UpdateTargetSize(int choice)
-{
-    int i, v;
-    int best_score;
-    int best_remove_v;
-
-    best_score = -(v_num + 1);
-
-    //        for (i = 0; i < candidate_size; i++) {
-    //            v = candidate[i];
-    //            //if(isCut[v]==1||v_fixed[v]==1 )
-    //            if(inToberemoved[v]==0||v_fixed[v]==1 )
-    //                continue;//不删固定的点和割点
-    //            if (score[v] == 0) {
-    //                // lin jinkun
-    //                best_remove_v = v;
-    //                break;
-    //            }
-    //            if (score[v] > best_score) {
-    //                best_remove_v = v;
-    //                best_score=score[v];
-    //            }
-    //        }
-    best_remove_v = ChooseRemoveVTopofBMS(100, choice);
-
-    Remove(best_remove_v, 1);
-    //removeUpdate(best_remove_v);
-    //cout<<"update删除"<<best_remove_v<<endl;
-    conf_change[best_remove_v] = 1; //这一步删除不要将其设为0
-    time_stamp[best_remove_v] = step;
-    if (undom_stack_fill_pointer == 0)
-    {
-        best_c_size = c_size;
-        best_comp_time = TimeElapsed();
-        best_step = step;
-        best_v_in_c[best_remove_v] = 0;
-        //if(choice==1)
-        //  cout<<"fast    ";
-        //else cout<<"tarjan    ";
-        //std::cout <<"直接删： "<< best_c_size << '\t' << step << '\t' << TimeElapsed()<< std::endl;
-    }
-    return best_remove_v;
-} //在当前所有点全都被支配的情况下选择一个分数最高的点删除
 
 //根据v_in_c更新candidate
 void ResetCandidate()
@@ -109,12 +60,6 @@ void UpdateBestSolution()
     //std::cout << best_c_size << '\t' << step << '\t' << TimeElapsed()<< std::endl;
     // #endif
 } //更新最优解
-
-int ind = 0;
-int root = 1;
-int maxScore = 0; //删除点时的最大分数
-int maxPoint = 0; //选中的最大点
-int Toroot = -1;  //直接连接root的点，有则标号，无则-1
 
 void cutPoint(int cur, int fa)
 {

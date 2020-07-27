@@ -1,6 +1,6 @@
 #pragma once
 
-#include "checker.h"
+#include "basic.h"
 
 #define NDEBUG
 #define N_DEBUG_OUTPUT //输出添加删除节点信息
@@ -14,7 +14,6 @@ void printDebugMsg(string msg)
     cout << msg << endl;
 #endif
 }
-
 void printDebugRemove(int v, int step, int time)
 {
 #ifdef DEBUG_OUTPUT
@@ -73,13 +72,13 @@ void RemoveRedundant(int choice)
     if (!moduleRemoveRedundant)
         return;
     MarkCut();
-    for (int k = 0; k < redundantNodes->size(); k++)
+    while (redundantNodes->size() != 0)
     {
         int bestRemoveV = -1;
         double bestRemoveVWeight = 0.0;
         for (size_t i = 0; i < redundantNodes->size(); i++)
         {
-            int redundantV = redundantNodes->element_at(k);
+            int redundantV = redundantNodes->element_at(i);
             if (weight[redundantV] > bestRemoveVWeight && isCut[redundantV] == 0 && v_in_c[redundantV] == 1 && v_fixed[redundantV] == 0)
             {
                 bestRemoveV = redundantV;
@@ -90,7 +89,6 @@ void RemoveRedundant(int choice)
         {
             Remove(bestRemoveV, choice);
             MarkCut();
-            k = 0;
         }
         else
         {
@@ -150,7 +148,6 @@ int NewSolutionChooseVFromMethodA()
 int NewSolutionChooseVFromMethodB()
 {
 }
-
 int NewSolutionChooseVFromMethodC()
 {
     int best_add_v = -1;
@@ -199,7 +196,6 @@ int NewSolutionChooseVFromMethodC()
     }
     return best_add_v;
 }
-
 int NewSolutionChooseVFromMethodD()
 {
 }
@@ -227,11 +223,6 @@ void Restart()
     toberemovedNum = 0;
     undom_stack_fill_pointer = 0;
     currentWeight = 0;
-    totalweight = totalweight_backup;
-    for (size_t i = 1; i < v_num + 1; i++)
-    {
-        Undom(i);
-    }
     greypointnum = 0;
     if (currentMode == ChooseMode::ModeC)
     {
@@ -1310,10 +1301,11 @@ void localSearchFramework2()
     while (TimeElapsed() < cutoff_time)
     {
         //TODO:测试代码
+        //        Framework2TarjanScatter();
+        //        // Framework2TarjanFocus();
+        //        Restart();
         Framework2TarjanScatter();
-        // Framework2TarjanFocus();
-        Restart();
-
+        Framework2TarjanFocus();
 
         //        if (noImproveCount < noImproveRestart)
         //        {
