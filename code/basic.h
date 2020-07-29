@@ -95,8 +95,6 @@ double *weight;
 double weight_para_aphle = 0.3; //权重调整系数
 int *subscore;                  //带权的分数，可以变支配的点的权重和减去变不支配的点的权重和
 int *toberemoved;
-int *outofcut;
-int outofcutnum;
 int LastRemoved[4];           //上一轮最多有4个被删除
 int LastRemovedIndex = 0;     //上一轮被删除的个数
 bool rightAfternewlow = true; //刚刚刷新了一次新纪录
@@ -129,19 +127,19 @@ int *child;         //存储顶点的儿子数量，大小为v_num+1
 long *onlydominate; //onlydominate[a]=b表示a只被b支配
 
 int *dominated; //论文中的dd:dominated degree
-int *greypointset;
-int *indexingreypoint;
-int *isgrey;
-int greypointnum = 0;
+Array *greyPointArray;
+Array *undomPointArray;
+Array *candidateArray;
+// int *greypointset;
+// int *indexingreypoint;
+// int *isgrey;
+// int greypointnum = 0;
 //int cur_c_size;
 int c_size;
 int *v_in_c;
 int *candidate;
 int *index_in_candidate;
-int *outof_candidate;
 int candidate_size;
-int outof_candidate_size;
-int *index_in_outofcandidate;
 int maxDegreeNode = 1;
 llong now_weight;
 
@@ -151,13 +149,10 @@ int *best_dominated;
 double best_comp_time;
 llong best_step;
 
-//上次启动最后的解
-int last_c_size;
-int *last_v_in_c;
+//int *undom_stack;
+//int undom_stack_fill_pointer;
+//int *index_in_undom_stack;
 
-int *undom_stack;
-int undom_stack_fill_pointer;
-int *index_in_undom_stack;
 long *taburemove; //删除节点的禁忌长度
 long *tabuadd;
 int tabutenue = 5;
@@ -199,7 +194,9 @@ llong averagedegree = 0;
 double totalweight;
 double weightthreshold;   //权重阈值
 double currentWeight = 0; //当前解权重和
-double bestWeight;        //当前最优解权重和
+double bestWeight;        //最优解权重和
+double bestWeightInTurn; //当前轮次最优解
+bool is_restart = false;
 //llong check_size = 0;
 
 int *father;
@@ -240,6 +237,8 @@ void updateS(int);
 int chooseMax();
 void addNodeInit(int);
 void ConstructByInitScore();
+void restartIncreaseDominate(int, int);
+void restartAdd(int);
 
 //update.h
 int ind = 0;

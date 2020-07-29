@@ -5,36 +5,25 @@
 //根据v_in_c更新candidate
 void ResetCandidate()
 {
-    int v;
     int j = 0;
-    int i = 0;
-
-    for (v = 1; v < v_num + 1; v++)
+    for (int v = 1; v < v_num + 1; v++)
     {
         if (v_in_c[v] == 1 && v_fixed[v] == 0)
         {
             candidate[j] = v;
             index_in_candidate[v] = j;
-            index_in_outofcandidate[v] = 0;
             j++;
         }
         else
         {
             index_in_candidate[v] = 0;
-            index_in_outofcandidate[v] = i;
-            outof_candidate[i] = v;
-            i++;
             if (dominated[v] > 0)
             {
-                indexingreypoint[v] = greypointnum;
-                greypointset[greypointnum++] = v;
-                isgrey[v] = 1;
+                greyPointArray->insert_element(v);
             }
         }
     }
-
     candidate_size = j;
-    outof_candidate_size = i;
 } //根据v_in_c来重置在候选解C中的点
 
 void UpdateBestSolution()

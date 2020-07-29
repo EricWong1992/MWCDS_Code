@@ -45,10 +45,13 @@ int BuildInstance(string filename)
             score = new int[v_num + 1];
             subscore = new int[v_num + 1];
             time_stamp = new llong[v_num + 1];
-            isgrey = new int[v_num + 1];
-            greypointset = new int[v_num + 1];
+            greyPointArray = new Array(v_num);
+            undomPointArray = new Array(v_num);
+            candidateArray = new Array(v_num);
+            // isgrey = new int[v_num + 1];
+            // greypointset = new int[v_num + 1];
+            // indexingreypoint = new int[v_num + 1];
             first = new int[v_num + 1];
-            indexingreypoint = new int[v_num + 1];
             v_edges = new int *[v_num + 1];
             v_adj = new long *[v_num + 1];
             v_degree = new int[v_num + 1];
@@ -57,14 +60,12 @@ int BuildInstance(string filename)
             v_in_c = new int[v_num + 1];
             candidate = new int[v_num + 1];
             index_in_candidate = new int[v_num + 1];
-            outof_candidate = new int[v_num + 1];
-            index_in_outofcandidate = new int[v_num + 1];
             best_v_in_c = new int[v_num + 1];
-            last_v_in_c = new int[v_num + 1];
             conf_change = new int[v_num + 1];
             dominated = new int[v_num + 1];
             best_dominated = new int[v_num + 1];
-            undom_stack = new int[v_num + 1];
+            // undom_stack = new int[v_num + 1];
+            // index_in_undom_stack = new int[v_num + 1];
             initscore = new int[v_num + 1];
             isInS = new int[v_num + 1];
             edge = new EdgeLib[e_num + e_num];
@@ -75,7 +76,6 @@ int BuildInstance(string filename)
             dnf = new int[v_num + 1];
             low = new int[v_num + 1];
             isCut = new int[v_num + 1];
-            index_in_undom_stack = new int[v_num + 1];
             v_fixed = new int[v_num + 1];
             RemovedPoint = new int[v_num + 1];
             AddedPoint = new int[v_num + 1];
@@ -83,7 +83,6 @@ int BuildInstance(string filename)
              my_heap = new int[v_num + 1];
              pos_in_my_heap = new int[v_num + 1];
             toberemoved = new int[v_num + 1];
-            outofcut = new int[v_num + 1];
             taburemove = new long[v_num + 1];
             tabuadd = new long[v_num + 1];
             child = new int[v_num + 1];
@@ -109,7 +108,7 @@ int BuildInstance(string filename)
             fill_n(taburemove, v_num + 1, 0);
             fill_n(tabuadd, v_num + 1, 0);
             fill_n(initscore, v_num + 1, 0);
-            fill_n(isgrey, v_num + 1, 0);
+            // fill_n(isgrey, v_num + 1, 0);
             fill_n(v_in_c, v_num + 1, 0);
             fill_n(score, v_num + 1, 0);
             fill_n(subscore, v_num + 1, 0);
@@ -159,6 +158,7 @@ int BuildInstance(string filename)
         }
         infile >> tempStr;
     }
+    bestWeightInTurn = totalweight;
     bestWeight = totalweight;
 
     infile.close();
@@ -211,13 +211,15 @@ void FreeMemory()
     }
     delete removedNodeNeighbor;
     delete redundantNodes;
+    delete greyPointArray;
+    delete undomPointArray;
+    delete candidateArray;
 //    delete myHeap;
     delete[] dominated;
-    delete[] undom_stack;
-    delete[] index_in_undom_stack;
+    // delete[] undom_stack;
+    // delete[] index_in_undom_stack;
     delete[] conf_change;
     delete[] best_v_in_c;
-    delete[] last_v_in_c;
     delete[] subWeight;
     delete[] pre_deci_step;
     delete[] temp_pre_deci_step;
@@ -228,6 +230,7 @@ void FreeMemory()
     delete[] v_adj;
     delete[] v_edges;
     delete[] time_stamp;
+    delete[] initscore;
     delete[] score;
      delete[] my_heap;
      delete[] pos_in_my_heap;
@@ -239,17 +242,14 @@ void FreeMemory()
     delete[] RemovedPoint;
     delete[] AddedPoint;
     delete[] cutPointSet;
-    delete[] outof_candidate;
-    delete[] index_in_outofcandidate;
-    delete[] indexingreypoint;
-    delete[] greypointset;
-    delete[] isgrey;
+    // delete[] indexingreypoint;
+    // delete[] greypointset;
+    // delete[] isgrey;
     delete[] edge;
     delete[] frequency;
     delete[] weight;
     delete[] subscore;
     delete[] toberemoved;
-    delete[] outofcut;
     delete[] taburemove;
     delete[] tabuadd;
     delete[] first;

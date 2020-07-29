@@ -76,14 +76,22 @@ bool test_score()
         {
             undom_num++;
             bool okay = false;
-            for (int i = 0; i < undom_stack_fill_pointer; ++i)
+            for (int i = 0; i < undomPointArray->size(); ++i)
             {
-                if (undom_stack[i] == v)
+                if (undomPointArray->element_at(i) == v)
                 {
                     okay = true;
                     break;
                 }
             }
+            // for (int i = 0; i < undom_stack_fill_pointer; ++i)
+            // {
+            //     if (undom_stack[i] == v)
+            //     {
+            //         okay = true;
+            //         break;
+            //     }
+            // }
             if (!okay)
             {
                 std::cout << "not in undom_stack: " << v << std::endl;
@@ -91,7 +99,7 @@ bool test_score()
             }
         }
     }
-    if (undom_num != undom_stack_fill_pointer)
+    if (undom_num != undomPointArray->size())
     {
         std::cout << "undom_num wrong!" << std::endl;
     }

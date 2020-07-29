@@ -254,7 +254,7 @@ void ConstructByInitScore()
     my_heap_remove(pos);
     ds_size++;
     int maxTmpIndex = chooseMax();
-    while (maxTmpIndex != -1 && (undom_stack_fill_pointer != 0 || connectedNum != 1))
+    while (maxTmpIndex != -1 && (undomPointArray->size() != 0 || connectedNum != 1))
     { //不是CDS且返回值不是-1
         int pos = pos_in_my_heap[maxTmpIndex];
         my_heap_remove(pos);
@@ -291,4 +291,67 @@ void ConstructByInitScore()
     ResetCandidate();
     //for(int i=1;i<=v_num;i++)
     //   cout<<score[i]<<' '<<find(i)<<' '<<dominated[i]<<endl;
+}
+
+void restartIncreaseDominate(int v, int v_dominater)
+{
+    if (dominated[v] == 0)
+    {
+        --score[v];
+        for (size_t i = 0; i < v_degree[v]; i++)
+        {
+            int u = v_adj[v][i];
+            --score[u];
+        }
+        Dom(v);
+        onlydominate[v] = v_dominater;
+        //被自身支配时，此时是直接把白点变成黑点，不需要修改灰点集合
+        if (v != v_dominater)
+        {
+            greyPointArray->insert_element(v);
+            // isgrey[v] = 1;
+            // indexingreypoint[v] = greypointnum;
+            // greypointset[greypointnum++] = v;
+        }
+    }
+    else if (dominated[v] == 1)
+    {
+        if (v_in_c[v] == 1)
+        {
+            ++score[v];
+        }
+        else
+        {
+            int v_dominater = onlydominate[v];
+            ++score[v_dominater];
+        }
+    }
+    ++dominated[v];
+}
+
+void restartAdd(int v)
+{
+    if (v_in_c[v] == 1)
+        return;
+    v_in_c[v] = 1;
+    c_size++;
+    currentWeight += weight[v];
+    //初始点添加的时候是直接从白点变成黑点
+    greyPointArray->delete_element(v);
+    // if (isgrey[v] == 1)
+    // {
+    //     isgrey[v] = 0;
+    //     int index = indexingreypoint[v];
+    //     int last = greypointset[--greypointnum];
+    //     indexingreypoint[last] = index;
+    //     greypointset[index] = last;
+    // }
+    int new_score = -score[v];
+    restartIncreaseDominate(v, v);
+    for (size_t i = 0; i < v_degree[v]; i++)
+    {
+        int u = v_adj[v][i];
+        restartIncreaseDominate(u, v);
+    }
+    score[v] = new_score;
 }
