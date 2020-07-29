@@ -31,7 +31,7 @@ void UpdateBestSolution()
     //    int v;
     if (currentWeight < bestWeight)
     {
-        // cout << currentWeight << endl;
+        cout << "weight: " << currentWeight << endl;
         best_c_size = c_size;
         best_comp_time = TimeElapsed();
         best_step = step;

@@ -2023,15 +2023,15 @@ void Framework2TarjanScatter()
         }
         //        if (is_restart && currentWeight < bestWeightInTurn)
         //            cout << "CandidateSize:" << candidate_size << " Undom:" << undomPointArray->size() << " weight:" << currentWeight << endl;
-        if (undomPointArray->size() == 0)
-        {
-            cout << "currentWeight:" << currentWeight;
-            if (!CheckSolutionIsConnected())
-            {
-                cout << " solution is not connected";
-            }
-            cout << endl;
-        }
+        // if (undomPointArray->size() == 0)
+        // {
+        //     cout << "currentWeight:" << currentWeight;
+        //     if (!CheckSolutionIsConnected())
+        //     {
+        //         cout << " solution is not connected";
+        //     }
+        //     cout << endl;
+        // }
 
         //已全部支配，判断当前解是否为更优解
         if (undomPointArray->size() == 0 && currentWeight < bestWeightInTurn)
