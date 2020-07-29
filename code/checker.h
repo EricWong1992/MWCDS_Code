@@ -84,14 +84,6 @@ bool test_score()
                     break;
                 }
             }
-            // for (int i = 0; i < undom_stack_fill_pointer; ++i)
-            // {
-            //     if (undom_stack[i] == v)
-            //     {
-            //         okay = true;
-            //         break;
-            //     }
-            // }
             if (!okay)
             {
                 std::cout << "not in undom_stack: " << v << std::endl;

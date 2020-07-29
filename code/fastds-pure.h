@@ -34,8 +34,6 @@ inline void Undom(int v)
     // #ifndef NDEBUG
     //     std::cout << "Undom\t" << v << std::endl;
     // #endif
-    //     index_in_undom_stack[v] = undom_stack_fill_pointer;
-    //     Push(v, undom_stack);
 } //向undom中push v
 
 //支配v
@@ -45,12 +43,6 @@ inline void Dom(int v)
     // #ifndef NDEBUG
     //     std::cout << "Dom\t" << v << std::endl;
     // #endif
-    //     int index, last_undom_vertex;
-
-    //     last_undom_vertex = Pop(undom_stack);
-    //     index = index_in_undom_stack[v];
-    //     undom_stack[index] = last_undom_vertex;
-    //     index_in_undom_stack[last_undom_vertex] = index;
 } //将v从undomstack中移除
 
 //更新冗余结点
@@ -126,7 +118,6 @@ int NewSolutionChooseVFromMethodA()
     else
     {
         //从灰点中选择
-        // cout << "greyNum:" << greypointnum << endl;
         for (size_t i = 0; i < greyPointArray->size(); i++)
         {
             int greyPoint = greyPointArray->element_at(i);
@@ -177,7 +168,6 @@ int NewSolutionChooseVFromMethodC()
     else
     {
         //从灰点中选择
-        // cout << "greyNum:" << greypointnum << endl;
         for (size_t i = 0; i < greyPointArray->size(); i++)
         {
             int greyPoint = greyPointArray->element_at(i);
@@ -209,7 +199,6 @@ void Restart()
     //重置数据
     greyPointArray->clear();
     fill_n(v_in_c, v_num + 1, 0);
-    // fill_n(isgrey, v_num + 1, 0);
     fill_n(dominated, v_num + 1, 0);
     fill_n(taburemove, v_num + 1, 0);
     fill_n(tabuadd, v_num + 1, 0);
@@ -222,23 +211,31 @@ void Restart()
     c_size = 0;
     cutIndex = 0;
     toberemovedNum = 0;
-    // undom_stack_fill_pointer = 0;
     for (int v = 1; v < v_num + 1; ++v)
     {
-        greyPointArray->insert_element(v);
+        undomPointArray->insert_element(v);
     }
     currentWeight = 0;
-    // greypointnum = 0;
     if (currentMode == ChooseMode::ModeC)
     {
         add_step = 0;
     }
+    fill_n(score, v_num + 1, 0);
+    fill_n(subscore, v_num + 1, 0);
+    for (size_t i = 1; i < v_num + 1; i++)
+    {
+        score[i] = v_degree[i] + 1;
+        subscore[i] = frequency[i];
+        for (size_t j = 0; j < v_degree[i]; j++)
+        {
+            subscore[i] += frequency[v_adj[i][j]];
+        }
+    }
+
     //构造新解
     ConstructNewSolution();
     //选点完毕subweight清空, 重新记录
     //score, subscore清除
-    fill_n(score, v_num + 1, 0);
-    lowerScore();
     if (currentMode == ChooseMode::ModeA || currentMode == ChooseMode::ModeB)
     {
         fill_n(subWeight, v_num + 1, 0);
@@ -320,10 +317,7 @@ void increase_dominate(long v, long source_v)
         Dom(v);
         onlydominate[v] = source_v; //libohan_10_6
 
-        greyPointArray->insert_element(v);
-        // isgrey[v] = 1;
-        // indexingreypoint[v] = greypointnum;
-        // greypointset[greypointnum++] = v; //新被支配的白点变成灰点
+        greyPointArray->insert_element(v); //新被支配的白点变成灰点
     } //一个原本不被支配的点变得被支配了，该点以及周围的点都要分数-1
     else if (dominated[v] == 1)
     {
@@ -442,12 +436,7 @@ bool Add(int v, int choice = 1)
         return false; //不会重复加入
     //构建新解调用时，加入的点不一定是灰点
 
-    greyPointArray->delete_element(v);
-    // isgrey[v] = 0;
-    // int indextmp = indexingreypoint[v];
-    // int last = greypointset[--greypointnum];
-    // indexingreypoint[last] = indextmp;
-    // greypointset[indextmp] = last; //新加入的点原先是灰点，要删除
+    greyPointArray->delete_element(v);//新加入的点原先是灰点，要删除
 
     if (currentMode == ChooseMode::ModeA)
     {
@@ -471,10 +460,10 @@ bool Add(int v, int choice = 1)
     c_size++;
     candidate[candidate_size] = v; //新加入的点总是最后加入
     index_in_candidate[v] = candidate_size++;
-//    int last_out_candidate_v = outof_candidate[--outof_candidate_size];
-//    int index = index_in_outofcandidate[v];
-//    outof_candidate[index] = last_out_candidate_v;
-//    index_in_outofcandidate[last_out_candidate_v] = index; //将index in candidate中去掉v
+    //    int last_out_candidate_v = outof_candidate[--outof_candidate_size];
+    //    int index = index_in_outofcandidate[v];
+    //    outof_candidate[index] = last_out_candidate_v;
+    //    index_in_outofcandidate[last_out_candidate_v] = index; //将index in candidate中去掉v
 
     //    if(dominated[v]!=0){
     //        connectedNum-=(calCV(v)-1);
@@ -522,11 +511,6 @@ void decrease_dominate(int v)
         }
         Undom(v);
         greyPointArray->delete_element(v);
-        // isgrey[v] = 0;
-        // int indextmp = indexingreypoint[v];
-        // int last = greypointset[--greypointnum];
-        // greypointset[indextmp] = last;
-        // indexingreypoint[last] = indextmp;
     } //如果只被支配了一次的点的被支配数要下降，则该点不被支配了，则该点及其周围的点的分数+1，并且undom这个点&&对于连通的黑点的情况不可能出现这样的情况，因此分数只会下降
     else if (dominated[v] == 2)
     {
@@ -643,15 +627,12 @@ void removeUpdate(int v)
 //@param choice 0修改cc
 bool Remove(int v, int choice = 1)
 {
-    greyPointArray->insert_element(v);
-    // isgrey[v] = 1;
-    // indexingreypoint[v] = greypointnum;
-    // greypointset[greypointnum++] = v; //删掉一个非割点后，这个点肯定是灰点
+    greyPointArray->insert_element(v);//删掉一个非割点后，这个点肯定是灰点
     v_in_c[v] = 0;
     currentWeight -= weight[v];
     c_size--;
-//    outof_candidate[outof_candidate_size] = v; //新加入的点总是最后加入
-//    index_in_outofcandidate[v] = outof_candidate_size++;
+    //    outof_candidate[outof_candidate_size] = v; //新加入的点总是最后加入
+    //    index_in_outofcandidate[v] = outof_candidate_size++;
     int last_candidate_v = candidate[--candidate_size];
     int index = index_in_candidate[v];
     candidate[index] = last_candidate_v;
@@ -892,7 +873,6 @@ int ChooseAddVsubscorefast()
         {
             add_v = v_adj[base_v][j];
             if (m.find(add_v) == m.end() && greyPointArray->is_in_array(add_v) && (weight[add_v] + currentWeight < bestWeightInTurn))
-            // if (m.find(add_v) == m.end() && isgrey[add_v] && (weight[add_v] + currentWeight < bestWeight))
             {
                 m[add_v] = topIndex; //不重复考虑
                 tobeadd1[topIndex++] = add_v;
@@ -952,7 +932,6 @@ int ChooseAddVsubscorefastAspration()
         {
             add_v = v_adj[base_v][j];
             if (m.find(add_v) == m.end() && greyPointArray->is_in_array(add_v) && (weight[add_v] + currentWeight < bestWeight))
-            // if (m.find(add_v) == m.end() && isgrey[add_v] && (weight[add_v] + currentWeight < bestWeight))
             {
                 m[add_v] = topIndex; //不重复考虑
                 tobeadd1[topIndex++] = add_v;
@@ -1034,7 +1013,6 @@ int ChooseAddVbest()
         {
             add_v = v_adj[base_v][j];
             if (greyPointArray->is_in_array(add_v) && weight[add_v] + currentWeight < bestWeight)
-            // if (isgrey[add_v] && weight[add_v] + currentWeight < bestWeight)
             {
                 cscore = subscore[add_v] / weight[add_v];
                 if (cscore > best_score)
@@ -1065,7 +1043,6 @@ int ChooseAddVtabufastbanlasttime() //仅仅禁掉刚刚上一轮刚刚删除的
         {
             add_v = v_adj[base_v][j];
             if (m.find(add_v) == m.end() && greyPointArray->is_in_array(add_v) && weight[add_v] + currentWeight < bestWeight)
-            // if (m.find(add_v) == m.end() && isgrey[add_v] && weight[add_v] + currentWeight < bestWeight)
             //仅仅考虑白点周围的，加进来不让总权重超出的灰点,并且不重复考虑点
             {
                 m[add_v] = topIndex;
@@ -1119,7 +1096,6 @@ int ChooseAddVtabufast()
         {
             add_v = v_adj[base_v][j];
             if (m.find(add_v) == m.end() && greyPointArray->is_in_array(add_v) && weight[add_v] + currentWeight < bestWeightInTurn)
-            // if (m.find(add_v) == m.end() && isgrey[add_v] && weight[add_v] + currentWeight < bestWeight)
             //仅仅考虑白点周围的，加进来不让总权重超出的灰点,并且不重复考虑点
             {
                 m[add_v] = topIndex; //不重复考虑
@@ -1180,7 +1156,6 @@ int ChooseAddVtabufastAspration() //解禁的tabu选点
         {
             add_v = v_adj[base_v][j];
             if (m.find(add_v) == m.end() && greyPointArray->is_in_array(add_v) && weight[add_v] + currentWeight < bestWeight)
-            // if (m.find(add_v) == m.end() && isgrey[add_v] && weight[add_v] + currentWeight < bestWeight)
             //仅仅考虑白点周围的，加进来不让总权重超出的灰点,并且不重复考虑点
             {
                 m[add_v] = topIndex; //不重复考虑
@@ -2044,8 +2019,8 @@ void Framework2TarjanScatter()
             time_stamp[best_add_v] = step;
             //            step++;
         }
-        if (is_restart)
-            cout << "CandidateSize:" << candidate_size << " Undom:" << undomPointArray->size() << " weight:" << currentWeight << endl;
+        //        if (is_restart && currentWeight < bestWeightInTurn)
+        //            cout << "CandidateSize:" << candidate_size << " Undom:" << undomPointArray->size() << " weight:" << currentWeight << endl;
         if (undomPointArray->size() == 0)
         {
             cout << "currentWeight:" << currentWeight;

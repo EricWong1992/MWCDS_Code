@@ -127,14 +127,9 @@ int *child;         //存储顶点的儿子数量，大小为v_num+1
 long *onlydominate; //onlydominate[a]=b表示a只被b支配
 
 int *dominated; //论文中的dd:dominated degree
-Array *greyPointArray;
-Array *undomPointArray;
-Array *candidateArray;
-// int *greypointset;
-// int *indexingreypoint;
-// int *isgrey;
-// int greypointnum = 0;
-//int cur_c_size;
+Array *greyPointArray;  //灰点集
+Array *undomPointArray; //未支配集
+Array *candidateArray;  //当前候选解
 int c_size;
 int *v_in_c;
 int *candidate;
@@ -148,10 +143,6 @@ int *best_v_in_c;
 int *best_dominated;
 double best_comp_time;
 llong best_step;
-
-//int *undom_stack;
-//int undom_stack_fill_pointer;
-//int *index_in_undom_stack;
 
 long *taburemove; //删除节点的禁忌长度
 long *tabuadd;

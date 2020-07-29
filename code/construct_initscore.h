@@ -297,11 +297,13 @@ void restartIncreaseDominate(int v, int v_dominater)
 {
     if (dominated[v] == 0)
     {
-        --score[v];
+        // --score[v];
+        // subscore[v] -= frequency[v];
         for (size_t i = 0; i < v_degree[v]; i++)
         {
             int u = v_adj[v][i];
             --score[u];
+            subscore[u] -= frequency[v];
         }
         Dom(v);
         onlydominate[v] = v_dominater;
@@ -309,21 +311,20 @@ void restartIncreaseDominate(int v, int v_dominater)
         if (v != v_dominater)
         {
             greyPointArray->insert_element(v);
-            // isgrey[v] = 1;
-            // indexingreypoint[v] = greypointnum;
-            // greypointset[greypointnum++] = v;
         }
     }
     else if (dominated[v] == 1)
     {
         if (v_in_c[v] == 1)
         {
-            ++score[v];
+            // ++score[v];
+            // subscore[v] += frequency[v];
         }
         else
         {
             int v_dominater = onlydominate[v];
             ++score[v_dominater];
+            subscore[v_dominater] += frequency[v];
         }
     }
     ++dominated[v];
@@ -338,15 +339,9 @@ void restartAdd(int v)
     currentWeight += weight[v];
     //初始点添加的时候是直接从白点变成黑点
     greyPointArray->delete_element(v);
-    // if (isgrey[v] == 1)
-    // {
-    //     isgrey[v] = 0;
-    //     int index = indexingreypoint[v];
-    //     int last = greypointset[--greypointnum];
-    //     indexingreypoint[last] = index;
-    //     greypointset[index] = last;
-    // }
+
     int new_score = -score[v];
+    int new_subscore = -subscore[v];
     restartIncreaseDominate(v, v);
     for (size_t i = 0; i < v_degree[v]; i++)
     {
@@ -354,4 +349,5 @@ void restartAdd(int v)
         restartIncreaseDominate(u, v);
     }
     score[v] = new_score;
+    subscore[v] = new_subscore;
 }

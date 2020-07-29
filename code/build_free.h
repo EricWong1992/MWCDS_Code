@@ -48,9 +48,6 @@ int BuildInstance(string filename)
             greyPointArray = new Array(v_num);
             undomPointArray = new Array(v_num);
             candidateArray = new Array(v_num);
-            // isgrey = new int[v_num + 1];
-            // greypointset = new int[v_num + 1];
-            // indexingreypoint = new int[v_num + 1];
             first = new int[v_num + 1];
             v_edges = new int *[v_num + 1];
             v_adj = new long *[v_num + 1];
@@ -64,8 +61,6 @@ int BuildInstance(string filename)
             conf_change = new int[v_num + 1];
             dominated = new int[v_num + 1];
             best_dominated = new int[v_num + 1];
-            // undom_stack = new int[v_num + 1];
-            // index_in_undom_stack = new int[v_num + 1];
             initscore = new int[v_num + 1];
             isInS = new int[v_num + 1];
             edge = new EdgeLib[e_num + e_num];
@@ -108,7 +103,6 @@ int BuildInstance(string filename)
             fill_n(taburemove, v_num + 1, 0);
             fill_n(tabuadd, v_num + 1, 0);
             fill_n(initscore, v_num + 1, 0);
-            // fill_n(isgrey, v_num + 1, 0);
             fill_n(v_in_c, v_num + 1, 0);
             fill_n(score, v_num + 1, 0);
             fill_n(subscore, v_num + 1, 0);
@@ -216,8 +210,6 @@ void FreeMemory()
     delete candidateArray;
 //    delete myHeap;
     delete[] dominated;
-    // delete[] undom_stack;
-    // delete[] index_in_undom_stack;
     delete[] conf_change;
     delete[] best_v_in_c;
     delete[] subWeight;
@@ -242,9 +234,6 @@ void FreeMemory()
     delete[] RemovedPoint;
     delete[] AddedPoint;
     delete[] cutPointSet;
-    // delete[] indexingreypoint;
-    // delete[] greypointset;
-    // delete[] isgrey;
     delete[] edge;
     delete[] frequency;
     delete[] weight;
