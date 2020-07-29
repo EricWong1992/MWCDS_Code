@@ -297,8 +297,8 @@ void restartIncreaseDominate(int v, int v_dominater)
 {
     if (dominated[v] == 0)
     {
-        // --score[v];
-        // subscore[v] -= frequency[v];
+        --score[v];
+        subscore[v] -= frequency[v];
         for (size_t i = 0; i < v_degree[v]; i++)
         {
             int u = v_adj[v][i];
@@ -317,8 +317,8 @@ void restartIncreaseDominate(int v, int v_dominater)
     {
         if (v_in_c[v] == 1)
         {
-            // ++score[v];
-            // subscore[v] += frequency[v];
+            ++score[v];
+            subscore[v] += frequency[v];
         }
         else
         {

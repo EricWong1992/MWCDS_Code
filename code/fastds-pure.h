@@ -318,7 +318,7 @@ void increase_dominate(long v, long source_v)
         onlydominate[v] = source_v; //libohan_10_6
 
         greyPointArray->insert_element(v); //新被支配的白点变成灰点
-    } //一个原本不被支配的点变得被支配了，该点以及周围的点都要分数-1
+    }                                      //一个原本不被支配的点变得被支配了，该点以及周围的点都要分数-1
     else if (dominated[v] == 1)
     {
         if (v_in_c[v] == 1)
@@ -436,7 +436,7 @@ bool Add(int v, int choice = 1)
         return false; //不会重复加入
     //构建新解调用时，加入的点不一定是灰点
 
-    greyPointArray->delete_element(v);//新加入的点原先是灰点，要删除
+    greyPointArray->delete_element(v); //新加入的点原先是灰点，要删除
 
     if (currentMode == ChooseMode::ModeA)
     {
@@ -627,7 +627,7 @@ void removeUpdate(int v)
 //@param choice 0修改cc
 bool Remove(int v, int choice = 1)
 {
-    greyPointArray->insert_element(v);//删掉一个非割点后，这个点肯定是灰点
+    greyPointArray->insert_element(v); //删掉一个非割点后，这个点肯定是灰点
     v_in_c[v] = 0;
     currentWeight -= weight[v];
     c_size--;
@@ -890,7 +890,9 @@ int ChooseAddVsubscorefast()
                             best_add_v = add_v;
                         else if (score[add_v] == score[best_add_v])
                             if ((dominated[add_v] > dominated[best_add_v]) || (dominated[add_v] == dominated[best_add_v] && time_stamp[add_v] < time_stamp[best_add_v]))
+                            {
                                 best_add_v = add_v;
+                            }
                     } //关乎safety找出best_add_v考虑CC
                 }
             }
