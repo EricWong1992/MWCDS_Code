@@ -91,107 +91,6 @@ void RemoveRedundant(int choice)
     }
 }
 
-int NewSolutionChooseVFromMethodA()
-{
-    int best_add_v = -1;
-    double cscore;
-    double best_cscore = -weightthreshold;
-    if (c_size == 0)
-    {
-        for (size_t i = 1; i < v_num + 1; i++)
-        {
-            cscore = subscore[i] / weight[i];
-            if (cscore > best_cscore)
-            {
-                best_add_v = i;
-                best_cscore = cscore;
-            }
-            else if (cscore == best_cscore)
-            {
-                if (subWeight[i] > subWeight[best_add_v])
-                {
-                    best_add_v = i;
-                }
-            }
-        }
-    }
-    else
-    {
-        //从灰点中选择
-        for (size_t i = 0; i < greyPointArray->size(); i++)
-        {
-            int greyPoint = greyPointArray->element_at(i);
-            cscore = subscore[greyPoint] / weight[greyPoint];
-            if (cscore > best_cscore)
-            {
-                best_add_v = greyPoint;
-                best_cscore = cscore;
-            }
-            else if (cscore == best_cscore)
-            {
-                if (subWeight[greyPoint] > subWeight[best_add_v])
-                {
-                    best_add_v = greyPoint;
-                }
-            }
-        }
-    }
-    return best_add_v;
-}
-int NewSolutionChooseVFromMethodB()
-{
-}
-int NewSolutionChooseVFromMethodC()
-{
-    int best_add_v = -1;
-    double cscore;
-    double best_cscore = -weightthreshold;
-    if (c_size == 0)
-    {
-        for (size_t i = 1; i < v_num + 1; i++)
-        {
-            cscore = subscore[i] / weight[i];
-            if (cscore > best_cscore)
-            {
-                best_add_v = i;
-                best_cscore = cscore;
-            }
-            else if (cscore == best_cscore)
-            {
-                if (pre_deci_step[i] > pre_deci_step[best_add_v])
-                {
-                    best_add_v = i;
-                }
-            }
-        }
-    }
-    else
-    {
-        //从灰点中选择
-        for (size_t i = 0; i < greyPointArray->size(); i++)
-        {
-            int greyPoint = greyPointArray->element_at(i);
-            cscore = subscore[greyPoint] / weight[greyPoint];
-            if (cscore > best_cscore)
-            {
-                best_add_v = greyPoint;
-                best_cscore = cscore;
-            }
-            else if (cscore == best_cscore)
-            {
-                if (pre_deci_step[greyPoint] > pre_deci_step[best_add_v])
-                {
-                    best_add_v = greyPoint;
-                }
-            }
-        }
-    }
-    return best_add_v;
-}
-int NewSolutionChooseVFromMethodD()
-{
-}
-
 void Restart()
 {
     is_restart = true;
@@ -233,7 +132,7 @@ void Restart()
     }
 
     //构造新解
-    ConstructNewSolution();
+    ConstructRestartSolution();
     //选点完毕subweight清空, 重新记录
     //score, subscore清除
     if (currentMode == ChooseMode::ModeA || currentMode == ChooseMode::ModeB)
@@ -251,10 +150,10 @@ void Restart()
     cout << "c_size:" << c_size << endl;
     cout << "newSolutionWeight:" << currentWeight << endl;
     bestWeightInTurn = currentWeight;
-    if (!CheckSolutionIsConnected())
-    {
-        cout << "solution is not connected" << endl;
-    }
+    // if (!CheckSolutionIsConnected())
+    // {
+    //     cout << "solution is not connected" << endl;
+    // }
 
     candidate_size = 0;
     //初始化所有candidate用于寻找割点
@@ -266,38 +165,6 @@ void Restart()
     MarkCut();
     //还原candidate
     ResetCandidate();
-}
-
-void ConstructNewSolution()
-{
-    //开始构建解
-    while (undomPointArray->size() != 0)
-    {
-        int addV = -1;
-        switch (currentMode)
-        {
-        case ChooseMode::ModeA:
-            addV = NewSolutionChooseVFromMethodA();
-            break;
-        case ChooseMode::ModeB:
-            addV = NewSolutionChooseVFromMethodA();
-            break;
-        case ChooseMode::ModeC:
-            addV = NewSolutionChooseVFromMethodC();
-            break;
-        case ChooseMode::ModeD:
-            addV = NewSolutionChooseVFromMethodD();
-            break;
-        }
-        if (addV != -1)
-        {
-            restartAdd(addV);
-            if (currentMode == ChooseMode::ModeC)
-            {
-                temp_pre_deci_step[addV] = add_step++;
-            }
-        }
-    }
 }
 
 void increase_dominate(long v, long source_v)

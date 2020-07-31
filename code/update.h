@@ -38,16 +38,6 @@ void UpdateBestSolution()
         bestWeight = currentWeight;
         memcpy(best_v_in_c, v_in_c, sizeof(int) * (v_num + 1));
     }
-    // if (c_size < best_c_size)
-    // {
-    //        for (v = 1; v < v_num + 1; v++) {
-    //            best_v_in_c[v] = v_in_c[v];
-    //        }
-    //memcpy(best_v_in_c,v_in_c,sizeof(int)*(v_num+1));
-    // }
-    // #ifndef NDEBUG
-    //std::cout << best_c_size << '\t' << step << '\t' << TimeElapsed()<< std::endl;
-    // #endif
 } //更新最优解
 
 void cutPoint(int cur, int fa)

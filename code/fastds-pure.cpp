@@ -2,7 +2,7 @@
 #include "build_free.h"
 #include "update.h"
 #include "checker.h"
-#include "construct_initscore.h"
+#include "construct_solution.h"
 #include "fastds-pure.h"
 #include "parse_cmd.h"
 #include <sstream>
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     }
     srand(seed);
     start = chrono::steady_clock::now();
-    ConstructByInitScore();
+    constructInitialSolution();
     // localSearchFramework1();
     localSearchFramework2();
 

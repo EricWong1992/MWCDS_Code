@@ -1,5 +1,6 @@
 #ifndef _BASIC_H
 #define _BASIC_H
+#include <climits>
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -126,11 +127,11 @@ int *SF;            //指向顶点的第一条未搜索边，大小为v_num+1
 int *child;         //存储顶点的儿子数量，大小为v_num+1
 long *onlydominate; //onlydominate[a]=b表示a只被b支配
 
-int *dominated; //论文中的dd:dominated degree
+int *dominated;         //论文中的dd:dominated degree
 Array *greyPointArray;  //灰点集
 Array *undomPointArray; //未支配集
 Array *candidateArray;  //当前候选解
-int c_size;
+int c_size = 0;
 int *v_in_c;
 int *candidate;
 int *index_in_candidate;
@@ -186,7 +187,7 @@ double totalweight;
 double weightthreshold;   //权重阈值
 double currentWeight = 0; //当前解权重和
 double bestWeight;        //最优解权重和
-double bestWeightInTurn; //当前轮次最优解
+double bestWeightInTurn;  //当前轮次最优解
 bool is_restart = false;
 //llong check_size = 0;
 
@@ -216,20 +217,30 @@ int BuildInstance(string);
 void FreeMemory();
 
 //construct_initscore.h
-void init_increase_dominate(int, int);
-int find(int);
-void join(int, int);
-int calCV(int);
-void lowerScore();
-void initSubScore();
-void joinV(int);
-void addToS(int);
-void updateS(int);
-int chooseMax();
-void addNodeInit(int);
-void ConstructByInitScore();
-void restartIncreaseDominate(int, int);
-void restartAdd(int);
+// void init_increase_dominate(int, int);
+// int find(int);
+// void join(int, int);
+// int calCV(int);
+// void lowerScore();
+// void initSubScore();
+// void joinV(int);
+// void addToS(int);
+// void updateS(int);
+// int chooseMax();
+// void addNodeInit(int);
+// void ConstructByInitScore();
+// void restartIncreaseDominate(int, int);
+// void restartAdd(int);
+
+//construct_solution.h
+void constructIncreaseDominate(int, int);
+void constructAdd(int);
+void constructInitialSolution();
+void ConstructRestartSolution();
+int NewSolutionChooseVFromMethodA(); //副分数选择频繁进出Candidate的点
+int NewSolutionChooseVFromMethodB(); //副分数选择总不在Candidate的点
+int NewSolutionChooseVFromMethodC(); //副分数尽量选择和上一轮构造不同的点
+int NewSolutionChooseVFromMethodD(); //从solution pool中选解mix
 
 //update.h
 int ind = 0;
@@ -285,10 +296,4 @@ void Framework2TarjanScatter(); //散点
 void updateRedundantV(int);
 void RemoveRedundant(int);
 void Restart();
-void ConstructNewSolution();
-int NewSolutionChooseVFromMethodA(); //副分数选择频繁进出Candidate的点
-int NewSolutionChooseVFromMethodB(); //副分数选择总不在Candidate的点
-int NewSolutionChooseVFromMethodC(); //副分数尽量选择和上一轮构造不同的点
-int NewSolutionChooseVFromMethodD(); //从solution pool中选解mix
-
 #endif
