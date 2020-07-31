@@ -1818,10 +1818,10 @@ void Framework2TarjanScatter()
             }
             if (NOimprovementstep > instance0)
             { //局部搜索中
-                instance0 += floor0;
-                if (instance0 > gap0)
-                    instance0 = gap0;
-                //return;
+                // instance0 += floor0;
+                // if (instance0 > gap0)
+                //     instance0 = gap0;
+                return;
             }
         }
         if (candidate_size == 1)
