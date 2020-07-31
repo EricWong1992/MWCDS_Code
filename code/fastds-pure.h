@@ -588,16 +588,16 @@ bool cmp(int a, int b)
 int ChooseRemoveVTopof()
 {
     int v;
-    double best_score = -weightthreshold;
+    int best_score = -weightthreshold;
     int best_remove_v = -1;
     int topIndex = 0;
-    double cscore;
+    int cscore;
     for (int i = 0; i < candidate_size; i++)
     {
         v = candidate[i];
         if (isCut[v] == 1 || v_fixed[v] == 1 || v == choosedadd_v)
             continue;
-        cscore = subscore[v] / weight[v];
+        cscore = (int)(subscore[v] / weight[v]);
         if (step > taburemove[v])
         {
             //if(score[v]>best_score)
@@ -633,12 +633,12 @@ int ChooseRemoveVTopof()
 int ChooseRemoveVTopofBMS(int count, int choice)
 {
     int v, i;
-    double best_score = -weightthreshold;
+    int best_score = -weightthreshold;
     int best_remove_v = -1;
     const int toberemovedNum1 = (int)(count);
     int toberemoved1[toberemovedNum1];
     int topIndex = 0;
-    double cscore; // subscore/weight，取最大，因为此时subscore是负的
+    int cscore; // subscore/weight，取最大，因为此时subscore是负的
     for (i = 0; i < count; i++)
     {
         if (choice == 1)
@@ -653,7 +653,7 @@ int ChooseRemoveVTopofBMS(int count, int choice)
             if (v_fixed[v] == 1 || isCut[v] == 1)
                 continue;
         }
-        cscore = subscore[v] / weight[v];
+        cscore = (int)(subscore[v] / weight[v]);
         toberemoved1[topIndex++] = v;
         if (step > taburemove[v])
         {
@@ -688,8 +688,8 @@ int ChooseRemoveVTopofBMS(int count, int choice)
 int ChooseRemoveVFromArray(Array *removedNodeNeighbor, int choice) //choice==0,tarjan;choice==1,tree
 {
     int best_remove_v = -1;
-    double cscore;
-    double best_cscore = -weightthreshold;
+    int cscore;
+    int best_cscore = -weightthreshold;
     for (size_t i = 0; i < removedNodeNeighbor->size(); i++)
     {
         int v = removedNodeNeighbor->element_at(i);
@@ -703,7 +703,7 @@ int ChooseRemoveVFromArray(Array *removedNodeNeighbor, int choice) //choice==0,t
             if (v_in_c[v] == 0 || inToberemoved[v] == 0 || v_fixed[v] == 1)
                 continue;
         }
-        cscore = subscore[v] / weight[v];
+        cscore = (int)(subscore[v] / weight[v]);
         if (step > taburemove[v])
         {
             if (cscore > best_cscore)
@@ -727,8 +727,8 @@ int ChooseAddVsubscorefast()
 {
     // TODO: proof there is at least one avaible add_v
     int base_v, add_v;
-    double cscore; //  subscore/weight，取最大
-    double best_score = -weightthreshold;
+    int cscore; //  subscore/weight，取最大
+    int best_score = -weightthreshold;
     int best_add_v = -1;
     map<int, int> m;
     const int tobeaddNum1 = (int)(undomPointArray->size() * v_degree[maxDegreeNode]);
@@ -744,7 +744,7 @@ int ChooseAddVsubscorefast()
             {
                 m[add_v] = topIndex; //不重复考虑
                 tobeadd1[topIndex++] = add_v;
-                cscore = subscore[add_v] / weight[add_v];
+                cscore = (int)(subscore[add_v] / weight[add_v]);
                 if (conf_change[add_v] == 1)
                 {
                     if (cscore > best_score)
@@ -786,8 +786,8 @@ int ChooseAddVsubscorefastAspration()
 {
     // TODO: proof there is at least one avaible add_v
     int base_v, add_v;
-    double cscore; //  subscore/weight，取最大
-    double best_score = -weightthreshold;
+    int cscore; //  subscore/weight，取最大
+    int best_score = -weightthreshold;
     double best_outCC_score = -weightthreshold;
     int best_outCC_add_v = -1;
     int best_add_v = -1;
@@ -805,7 +805,7 @@ int ChooseAddVsubscorefastAspration()
             {
                 m[add_v] = topIndex; //不重复考虑
                 tobeadd1[topIndex++] = add_v;
-                cscore = subscore[add_v] / weight[add_v];
+                cscore = (int)(subscore[add_v] / weight[add_v]);
                 if (cscore > best_outCC_score)
                 {
                     best_outCC_score = cscore;
@@ -873,8 +873,8 @@ bool checkLastRemoved(int node)
 int ChooseAddVbest()
 {
     int base_v, add_v;
-    double cscore; //  subscore/weight，取最大
-    double best_score = -weightthreshold;
+    int cscore; //  subscore/weight，取最大
+    int best_score = -weightthreshold;
     int best_add_v = -1;
     for (int i = 0; i < undomPointArray->size(); ++i)
     {
@@ -884,7 +884,7 @@ int ChooseAddVbest()
             add_v = v_adj[base_v][j];
             if (greyPointArray->is_in_array(add_v) && weight[add_v] + currentWeight < bestWeight)
             {
-                cscore = subscore[add_v] / weight[add_v];
+                cscore = (int)(subscore[add_v] / weight[add_v]);
                 if (cscore > best_score)
                 {
                     best_add_v = add_v;
@@ -899,8 +899,8 @@ int ChooseAddVbest()
 int ChooseAddVtabufastbanlasttime() //仅仅禁掉刚刚上一轮刚刚删除的点
 {
     int base_v, add_v;
-    double cscore; //  subscore/weight，取最大
-    double best_score = -weightthreshold;
+    int cscore; //  subscore/weight，取最大
+    int best_score = -weightthreshold;
     int best_add_v = -1;
     map<int, int> m;
     const int tobeaddNum1 = (int)(undomPointArray->size() * v_degree[maxDegreeNode]);
@@ -917,7 +917,7 @@ int ChooseAddVtabufastbanlasttime() //仅仅禁掉刚刚上一轮刚刚删除的
             {
                 m[add_v] = topIndex;
                 tobeadd1[topIndex++] = add_v; //tobeadd1中记录了所有的白点周围满足权重不超的灰点
-                cscore = subscore[add_v] / weight[add_v];
+                cscore = (int)(subscore[add_v] / weight[add_v]);
                 if (step != time_stamp[add_v]) //step不等于timestamp，则不是刚删的也不是刚加的
                 {
                     if (cscore > best_score)
@@ -952,8 +952,8 @@ int ChooseAddVtabufastbanlasttime() //仅仅禁掉刚刚上一轮刚刚删除的
 int ChooseAddVtabufast()
 {
     int base_v, add_v;
-    double cscore; //  subscore/weight，取最大
-    double best_score = -weightthreshold;
+    int cscore; //  subscore/weight，取最大
+    int best_score = -weightthreshold;
     int best_add_v = -1;
     map<int, int> m;
     const int tobeaddNum1 = (int)(undomPointArray->size() * v_degree[maxDegreeNode]);
@@ -969,7 +969,7 @@ int ChooseAddVtabufast()
             //仅仅考虑白点周围的，加进来不让总权重超出的灰点,并且不重复考虑点
             {
                 m[add_v] = topIndex; //不重复考虑
-                cscore = subscore[add_v] / weight[add_v];
+                cscore = (int)(subscore[add_v] / weight[add_v]);
                 tobeadd1[topIndex++] = add_v; //所有满足条件的灰点放进tobeadd1中
                 if (step >= tabuadd[add_v])   //刚被删除的点必然被禁忌，因此进不来这里
                 {
@@ -1010,8 +1010,8 @@ int ChooseAddVtabufast()
 int ChooseAddVtabufastAspration() //解禁的tabu选点
 {
     int base_v, add_v;
-    double cscore; //  subscore/weight，取最大
-    double best_score = -weightthreshold;
+    int cscore; //  subscore/weight，取最大
+    int best_score = -weightthreshold;
     int best_add_v = -1;
     map<int, int> m;
     int best_outtabu_addv = -1;
@@ -1029,7 +1029,7 @@ int ChooseAddVtabufastAspration() //解禁的tabu选点
             //仅仅考虑白点周围的，加进来不让总权重超出的灰点,并且不重复考虑点
             {
                 m[add_v] = topIndex; //不重复考虑
-                cscore = subscore[add_v] / weight[add_v];
+                cscore = (int)(subscore[add_v] / weight[add_v]);
                 if (cscore > best_outtabu_score)
                 {
                     best_outtabu_addv = add_v;

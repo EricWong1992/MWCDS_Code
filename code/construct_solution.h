@@ -128,13 +128,13 @@ void constructInitialSolution()
 int NewSolutionChooseVFromMethodA()
 {
     int best_add_v = -1;
-    double cscore;
-    double best_cscore = -weightthreshold;
+    int cscore;
+    int best_cscore = -weightthreshold;
     if (c_size == 0)
     {
         for (size_t i = 1; i < v_num + 1; i++)
         {
-            cscore = subscore[i] / weight[i];
+            cscore = (int)(subscore[i] / weight[i]);
             if (cscore > best_cscore)
             {
                 best_add_v = i;
@@ -155,7 +155,7 @@ int NewSolutionChooseVFromMethodA()
         for (size_t i = 0; i < greyPointArray->size(); i++)
         {
             int greyPoint = greyPointArray->element_at(i);
-            cscore = subscore[greyPoint] / weight[greyPoint];
+            cscore = (int)(subscore[greyPoint] / weight[greyPoint]);
             if (cscore > best_cscore)
             {
                 best_add_v = greyPoint;
@@ -178,13 +178,13 @@ int NewSolutionChooseVFromMethodB()
 int NewSolutionChooseVFromMethodC()
 {
     int best_add_v = -1;
-    double cscore;
-    double best_cscore = -weightthreshold;
+    int cscore;
+    int best_cscore = -weightthreshold;
     if (c_size == 0)
     {
         for (size_t i = 1; i < v_num + 1; i++)
         {
-            cscore = subscore[i] / weight[i];
+            cscore = (int)(subscore[i] / weight[i]);
             if (cscore > best_cscore)
             {
                 best_add_v = i;
@@ -205,7 +205,7 @@ int NewSolutionChooseVFromMethodC()
         for (size_t i = 0; i < greyPointArray->size(); i++)
         {
             int greyPoint = greyPointArray->element_at(i);
-            cscore = subscore[greyPoint] / weight[greyPoint];
+            cscore = (int)(subscore[greyPoint] / weight[greyPoint]);
             if (cscore > best_cscore)
             {
                 best_add_v = greyPoint;
