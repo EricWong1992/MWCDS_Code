@@ -256,6 +256,7 @@ void Restart()
         cout << "solution is not connected" << endl;
     }
 
+    candidate_size = 0;
     //初始化所有candidate用于寻找割点
     for (int i = 1; i <= v_num; ++i)
     {
