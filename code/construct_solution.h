@@ -46,6 +46,11 @@ void constructAdd(int v)
     currentWeight += weight[v];
     //初始点添加的时候是直接从白点变成黑点
     greyPointArray->delete_element(v);
+    
+    if (currentMode == ChooseMode::ModeC)
+    {
+        pre_deci_step[v] = add_step++;
+    }
 
     int new_score = -score[v];
     int new_subscore = -subscore[v];
